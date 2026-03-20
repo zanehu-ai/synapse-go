@@ -14,6 +14,13 @@ func init() {
 	gin.SetMode(gin.TestMode)
 }
 
+func mustUnmarshal(t *testing.T, body []byte, v interface{}) {
+	t.Helper()
+	if err := json.Unmarshal(body, v); err != nil {
+		t.Fatalf("failed to unmarshal response: %v\nbody: %s", err, body)
+	}
+}
+
 // TC-HAPPY-RESP-001: Success returns 200 with code=0
 func TestSuccess(t *testing.T) {
 	w := httptest.NewRecorder()
@@ -27,7 +34,7 @@ func TestSuccess(t *testing.T) {
 	}
 
 	var resp Response
-	json.Unmarshal(w.Body.Bytes(), &resp)
+	mustUnmarshal(t, w.Body.Bytes(), &resp)
 	if resp.Code != CodeSuccess {
 		t.Errorf("code = %d, want %d", resp.Code, CodeSuccess)
 	}
@@ -62,7 +69,7 @@ func TestError(t *testing.T) {
 	}
 
 	var resp Response
-	json.Unmarshal(w.Body.Bytes(), &resp)
+	mustUnmarshal(t, w.Body.Bytes(), &resp)
 	if resp.Code != CodeBadRequest {
 		t.Errorf("code = %d, want %d", resp.Code, CodeBadRequest)
 	}
@@ -81,7 +88,7 @@ func TestInternalError(t *testing.T) {
 	}
 
 	var resp Response
-	json.Unmarshal(w.Body.Bytes(), &resp)
+	mustUnmarshal(t, w.Body.Bytes(), &resp)
 	if resp.Code != CodeInternal {
 		t.Errorf("code = %d, want %d", resp.Code, CodeInternal)
 	}
@@ -99,9 +106,12 @@ func TestSuccessPage(t *testing.T) {
 	SuccessPage(c, []string{"a", "b"}, 100, 1, 20)
 
 	var resp Response
-	json.Unmarshal(w.Body.Bytes(), &resp)
+	mustUnmarshal(t, w.Body.Bytes(), &resp)
 
-	data := resp.Data.(map[string]interface{})
+	data, ok := resp.Data.(map[string]interface{})
+	if !ok {
+		t.Fatalf("expected Data to be map, got %T", resp.Data)
+	}
 	if data["total"].(float64) != 100 {
 		t.Errorf("total = %v, want 100", data["total"])
 	}
@@ -123,7 +133,7 @@ func TestSuccess_WithTraceID(t *testing.T) {
 	Success(c, nil)
 
 	var resp Response
-	json.Unmarshal(w.Body.Bytes(), &resp)
+	mustUnmarshal(t, w.Body.Bytes(), &resp)
 	if resp.TraceID != "abc-123" {
 		t.Errorf("trace_id = %q, want %q", resp.TraceID, "abc-123")
 	}

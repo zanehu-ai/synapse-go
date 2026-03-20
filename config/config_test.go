@@ -1,9 +1,6 @@
 package config
 
-import (
-	"os"
-	"testing"
-)
+import "testing"
 
 func TestGetEnv(t *testing.T) {
 	tests := []struct {
@@ -24,8 +21,7 @@ func TestGetEnv(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.setVal != "" {
-				os.Setenv(tt.key, tt.setVal)
-				defer os.Unsetenv(tt.key)
+				t.Setenv(tt.key, tt.setVal)
 			}
 			got := GetEnv(tt.key, tt.defaultVal)
 			if got != tt.want {
@@ -37,8 +33,7 @@ func TestGetEnv(t *testing.T) {
 
 // TC-HAPPY-CONFIG-003: env var with spaces preserved
 func TestGetEnv_PreservesSpaces(t *testing.T) {
-	os.Setenv("TEST_818_SPACES", "  spaced  ")
-	defer os.Unsetenv("TEST_818_SPACES")
+	t.Setenv("TEST_818_SPACES", "  spaced  ")
 
 	got := GetEnv("TEST_818_SPACES", "default")
 	if got != "  spaced  " {

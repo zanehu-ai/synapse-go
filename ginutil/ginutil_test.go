@@ -52,9 +52,15 @@ func TestParseIDParam_Invalid(t *testing.T) {
 	}
 
 	var resp map[string]interface{}
-	json.Unmarshal(w.Body.Bytes(), &resp)
-	if resp["code"].(float64) != 1001 {
-		t.Errorf("error code = %v, want 1001", resp["code"])
+	if err := json.Unmarshal(w.Body.Bytes(), &resp); err != nil {
+		t.Fatalf("failed to unmarshal: %v", err)
+	}
+	code, ok := resp["code"].(float64)
+	if !ok {
+		t.Fatalf("expected code field, got %v", resp)
+	}
+	if code != 1001 {
+		t.Errorf("error code = %v, want 1001", code)
 	}
 }
 

@@ -83,10 +83,12 @@ func TestParseJWT_Valid(t *testing.T) {
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	if claims["user_id"].(float64) != 42 {
+	uid, ok := claims["user_id"].(float64)
+	if !ok || uid != 42 {
 		t.Errorf("user_id = %v, want 42", claims["user_id"])
 	}
-	if claims["username"].(string) != "alice" {
+	uname, ok := claims["username"].(string)
+	if !ok || uname != "alice" {
 		t.Errorf("username = %v, want alice", claims["username"])
 	}
 }

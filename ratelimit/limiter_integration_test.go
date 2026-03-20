@@ -2,7 +2,9 @@ package ratelimit
 
 import (
 	"context"
+	"fmt"
 	"testing"
+	"time"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -16,20 +18,23 @@ func newTestRedis(t *testing.T) *redis.Client {
 	return rdb
 }
 
-func cleanupKeys(rdb *redis.Client, pattern string) {
+func cleanupRateLimitKeys(t *testing.T, rdb *redis.Client, userID int64) {
+	t.Helper()
 	ctx := context.Background()
-	keys, _ := rdb.Keys(ctx, pattern).Result()
-	if len(keys) > 0 {
-		rdb.Del(ctx, keys...)
-	}
+	prefix := fmt.Sprintf("user:%d", userID)
+	minuteKey := time.Now().Unix() / 60
+	rdb.Del(ctx,
+		fmt.Sprintf("rl:rpm:%s:%d", prefix, minuteKey),
+		fmt.Sprintf("rl:tpm:%s:%d", prefix, minuteKey),
+		fmt.Sprintf("rl:conc:%s", prefix),
+	)
 }
 
 // TC-HAPPY-LIMITER-INT-001: CheckPreRequest allows within limits
 func TestCheckPreRequest_Redis_Allowed(t *testing.T) {
 	rdb := newTestRedis(t)
 	defer rdb.Close()
-	defer cleanupKeys(rdb, "rl:*:user:8181:*")
-	defer cleanupKeys(rdb, "rl:conc:user:8181")
+	defer cleanupRateLimitKeys(t, rdb, 8181)
 
 	limiter := NewLimiter(rdb)
 	identity := RequestIdentity{UserID: 8181, AuthType: "user"}
@@ -58,8 +63,7 @@ func TestCheckPreRequest_Redis_Allowed(t *testing.T) {
 func TestCheckPreRequest_Redis_RPMExceeded(t *testing.T) {
 	rdb := newTestRedis(t)
 	defer rdb.Close()
-	defer cleanupKeys(rdb, "rl:*:user:8182:*")
-	defer cleanupKeys(rdb, "rl:conc:user:8182")
+	defer cleanupRateLimitKeys(t, rdb, 8182)
 
 	limiter := NewLimiter(rdb)
 	identity := RequestIdentity{UserID: 8182, AuthType: "user"}
@@ -92,8 +96,7 @@ func TestCheckPreRequest_Redis_RPMExceeded(t *testing.T) {
 func TestCheckPreRequest_Redis_TPMExceeded(t *testing.T) {
 	rdb := newTestRedis(t)
 	defer rdb.Close()
-	defer cleanupKeys(rdb, "rl:*:user:8183:*")
-	defer cleanupKeys(rdb, "rl:conc:user:8183")
+	defer cleanupRateLimitKeys(t, rdb, 8183)
 
 	limiter := NewLimiter(rdb)
 	identity := RequestIdentity{UserID: 8183, AuthType: "user"}
@@ -120,8 +123,7 @@ func TestCheckPreRequest_Redis_TPMExceeded(t *testing.T) {
 func TestCheckPreRequest_Redis_ConcurrencyExceeded(t *testing.T) {
 	rdb := newTestRedis(t)
 	defer rdb.Close()
-	defer cleanupKeys(rdb, "rl:*:user:8184:*")
-	defer cleanupKeys(rdb, "rl:conc:user:8184")
+	defer cleanupRateLimitKeys(t, rdb, 8184)
 
 	limiter := NewLimiter(rdb)
 	identity := RequestIdentity{UserID: 8184, AuthType: "user"}
@@ -149,8 +151,7 @@ func TestCheckPreRequest_Redis_ConcurrencyExceeded(t *testing.T) {
 func TestTrackPostResponse_Redis_AdjustsTPM(t *testing.T) {
 	rdb := newTestRedis(t)
 	defer rdb.Close()
-	defer cleanupKeys(rdb, "rl:*:user:8185:*")
-	defer cleanupKeys(rdb, "rl:conc:user:8185")
+	defer cleanupRateLimitKeys(t, rdb, 8185)
 
 	limiter := NewLimiter(rdb)
 	identity := RequestIdentity{UserID: 8185, AuthType: "user"}
@@ -180,8 +181,7 @@ func TestTrackPostResponse_Redis_AdjustsTPM(t *testing.T) {
 func TestReleaseConcurrency_Redis(t *testing.T) {
 	rdb := newTestRedis(t)
 	defer rdb.Close()
-	defer cleanupKeys(rdb, "rl:*:user:8186:*")
-	defer cleanupKeys(rdb, "rl:conc:user:8186")
+	defer cleanupRateLimitKeys(t, rdb, 8186)
 
 	limiter := NewLimiter(rdb)
 	identity := RequestIdentity{UserID: 8186, AuthType: "user"}

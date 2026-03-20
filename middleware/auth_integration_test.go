@@ -26,6 +26,7 @@ func TestLoginRateLimit_Redis_AllowsUnderLimit(t *testing.T) {
 
 	// Clean up test keys
 	rdb.Del(rdb.Context(), "login_fail:192.0.2.1")
+	defer rdb.Del(rdb.Context(), "login_fail:192.0.2.1")
 
 	handler := LoginRateLimit(rdb, 5, 15*time.Minute)
 

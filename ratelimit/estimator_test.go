@@ -58,12 +58,13 @@ func TestEstimateTotalTokens_InvalidJSON(t *testing.T) {
 
 // TC-BOUNDARY-ESTIMATOR-003: very large input capped at maxInputTokenEstimate
 func TestEstimateTotalTokens_LargeInputCapped(t *testing.T) {
-	// Create a message with > 512000 chars (> 128000 tokens at 4 chars/token)
-	largeContent := make([]byte, 600000)
+	// Just above the cap: 128001 * 4 = 512004 chars → would be 128001 tokens before cap
+	largeContent := make([]byte, 512004)
 	for i := range largeContent {
 		largeContent[i] = 'a'
 	}
-	body := []byte(`{"messages":[{"role":"user","content":"` + string(largeContent) + `"}]}`)
+	body := append([]byte(`{"messages":[{"role":"user","content":"`), largeContent...)
+	body = append(body, []byte(`"}]}`)...)
 	tokens := EstimateTotalTokens(body)
 	// Input should be capped at 128000, output at 500
 	if tokens > maxInputTokenEstimate+500+10 {
