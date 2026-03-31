@@ -3,7 +3,7 @@ package db
 import (
 	"testing"
 
-	"github.com/818tech/818-backend-shared/config"
+	"github.com/techfitmaster/synapse-go/config"
 )
 
 const testDSN = "root:root@tcp(localhost:3306)/test_818_shared?parseTime=true&charset=utf8mb4"

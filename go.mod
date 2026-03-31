@@ -1,4 +1,4 @@
-module github.com/818tech/818-backend-shared
+module github.com/techfitmaster/synapse-go
 
 go 1.24.0
 

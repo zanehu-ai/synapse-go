@@ -3,7 +3,7 @@ package redis
 import (
 	"testing"
 
-	"github.com/818tech/818-backend-shared/config"
+	"github.com/techfitmaster/synapse-go/config"
 )
 
 // TC-HAPPY-REDIS-001: connect to Redis with valid config

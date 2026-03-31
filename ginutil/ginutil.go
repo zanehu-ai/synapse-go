@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/818tech/818-backend-shared/resp"
+	"github.com/techfitmaster/synapse-go/resp"
 )
 
 // ParseIDParam reads ":id" from the route, writes a 400 error and returns false if invalid.

@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
-	"github.com/818tech/818-backend-shared/config"
+	"github.com/techfitmaster/synapse-go/config"
 )
 
 func New(cfg config.MySQLConfig) (*gorm.DB, error) {

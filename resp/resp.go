@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/818tech/818-backend-shared/logger"
+	"github.com/techfitmaster/synapse-go/logger"
 )
 
 const (
