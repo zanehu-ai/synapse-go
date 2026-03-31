@@ -23,7 +23,7 @@ func newTestRedis(t *testing.T) *redis.Client {
 func TestLoginRateLimit_Redis_AllowsUnderLimit(t *testing.T) {
 	if testing.Short() { t.Skip("requires external service") }
 	rdb := newTestRedis(t)
-	defer rdb.Close()
+	defer func() { _ = rdb.Close() }()
 
 	// Clean up test keys
 	rdb.Del(rdb.Context(), "login_fail:192.0.2.1")
@@ -50,7 +50,7 @@ func TestLoginRateLimit_Redis_AllowsUnderLimit(t *testing.T) {
 func TestLoginRateLimit_Redis_BlocksAfterMax(t *testing.T) {
 	if testing.Short() { t.Skip("requires external service") }
 	rdb := newTestRedis(t)
-	defer rdb.Close()
+	defer func() { _ = rdb.Close() }()
 
 	key := "login_fail:192.0.2.2"
 	rdb.Del(rdb.Context(), key)
@@ -86,7 +86,7 @@ func TestLoginRateLimit_Redis_BlocksAfterMax(t *testing.T) {
 func TestLoginRateLimit_Redis_ClearsOnSuccess(t *testing.T) {
 	if testing.Short() { t.Skip("requires external service") }
 	rdb := newTestRedis(t)
-	defer rdb.Close()
+	defer func() { _ = rdb.Close() }()
 
 	key := "login_fail:192.0.2.3"
 	rdb.Del(rdb.Context(), key)
@@ -126,7 +126,7 @@ func TestLoginRateLimit_Redis_ClearsOnSuccess(t *testing.T) {
 func TestIPRateLimit_Redis_AllowsUnderLimit(t *testing.T) {
 	if testing.Short() { t.Skip("requires external service") }
 	rdb := newTestRedis(t)
-	defer rdb.Close()
+	defer func() { _ = rdb.Close() }()
 
 	rdb.Del(rdb.Context(), "ip_rl:192.0.2.10")
 	defer rdb.Del(rdb.Context(), "ip_rl:192.0.2.10")
@@ -152,7 +152,7 @@ func TestIPRateLimit_Redis_AllowsUnderLimit(t *testing.T) {
 func TestIPRateLimit_Redis_BlocksOverLimit(t *testing.T) {
 	if testing.Short() { t.Skip("requires external service") }
 	rdb := newTestRedis(t)
-	defer rdb.Close()
+	defer func() { _ = rdb.Close() }()
 
 	key := "ip_rl:192.0.2.11"
 	rdb.Del(rdb.Context(), key)
