@@ -12,11 +12,10 @@ func TestNew_Success(t *testing.T) {
 	if err != nil {
 		t.Fatalf("failed to connect: %v", err)
 	}
-	defer client.Close()
-
 	if client == nil {
 		t.Fatal("expected non-nil client")
 	}
+	defer client.Close()
 }
 
 // TC-HAPPY-REDIS-002: set and get a key

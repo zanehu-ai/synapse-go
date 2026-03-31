@@ -1,6 +1,9 @@
 package ratelimit
 
-import "testing"
+import (
+	"context"
+	"testing"
+)
 
 // TC-HAPPY-LIMITER-001: nil Redis degrades to allow
 func TestNewLimiter_NilRedis(t *testing.T) {
@@ -8,7 +11,7 @@ func TestNewLimiter_NilRedis(t *testing.T) {
 	identity := RequestIdentity{UserID: 1, AuthType: "user"}
 	limits := DefaultLimits()
 
-	result := limiter.CheckPreRequest(nil, identity, limits, 100)
+	result := limiter.CheckPreRequest(context.TODO(), identity, limits, 100)
 	if !result.Allowed {
 		t.Fatal("expected request to be allowed when redis is nil")
 	}
@@ -20,7 +23,7 @@ func TestNewLimiter_NilRedisRemainingValues(t *testing.T) {
 	identity := RequestIdentity{UserID: 1, AuthType: "user"}
 	limits := RateLimits{RPM: 60, TPM: 100000, Concurrency: 10}
 
-	result := limiter.CheckPreRequest(nil, identity, limits, 100)
+	result := limiter.CheckPreRequest(context.TODO(), identity, limits, 100)
 	if result.RemainingRequests != 60 {
 		t.Errorf("RemainingRequests = %d, want 60", result.RemainingRequests)
 	}
@@ -35,7 +38,7 @@ func TestNilLimiter_ConcurrencyNotAcquired(t *testing.T) {
 	identity := RequestIdentity{UserID: 1, AuthType: "user"}
 	limits := DefaultLimits()
 
-	result := limiter.CheckPreRequest(nil, identity, limits, 100)
+	result := limiter.CheckPreRequest(context.TODO(), identity, limits, 100)
 	if result.ConcurrencyAcquired {
 		t.Fatal("expected ConcurrencyAcquired=false when Redis is nil")
 	}
@@ -45,15 +48,15 @@ func TestNilLimiter_ConcurrencyNotAcquired(t *testing.T) {
 func TestNilLimiter_TrackPostResponseNoPanic(t *testing.T) {
 	limiter := NewLimiter(nil)
 	identity := RequestIdentity{UserID: 1, AuthType: "user"}
-	limiter.TrackPostResponse(nil, identity, 100, 200, 12345, true)
-	limiter.TrackPostResponse(nil, identity, 100, 200, 12345, false)
+	limiter.TrackPostResponse(context.TODO(), identity, 100, 200, 12345, true)
+	limiter.TrackPostResponse(context.TODO(), identity, 100, 200, 12345, false)
 }
 
 // TC-SAFETY-LIMITER-003: nil Redis → ReleaseConcurrency doesn't panic
 func TestNilLimiter_ReleaseConcurrencyNoPanic(t *testing.T) {
 	limiter := NewLimiter(nil)
 	identity := RequestIdentity{UserID: 1, AuthType: "user"}
-	limiter.ReleaseConcurrency(nil, identity)
+	limiter.ReleaseConcurrency(context.TODO(), identity)
 }
 
 // TC-BOUNDARY-LIMITER-001: key prefix selection

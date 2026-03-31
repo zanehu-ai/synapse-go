@@ -56,7 +56,7 @@ func TestRun_WithMigration(t *testing.T) {
 		dbURL, _ := ToMigrateURL(testDSN)
 		m, err := migrate.New("file://"+dir, dbURL)
 		if err == nil {
-			m.Down()
+			_ = m.Down()
 			m.Close()
 		}
 	})

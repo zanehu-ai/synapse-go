@@ -58,7 +58,7 @@ func LoginRateLimit(rdb *redis.Client, maxAttempts int64, window time.Duration) 
 			pipe := rdb.Pipeline()
 			pipe.Incr(ctx, key)
 			pipe.Expire(ctx, key, window)
-			pipe.Exec(ctx)
+			_, _ = pipe.Exec(ctx)
 		} else if c.Writer.Status() == http.StatusOK {
 			rdb.Del(ctx, key)
 		}
