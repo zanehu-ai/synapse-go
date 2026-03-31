@@ -17,7 +17,7 @@ func newTestRedis(t *testing.T) *redis.Client {
 	}
 	t.Cleanup(s.Close)
 	rdb := redis.NewClient(&redis.Options{Addr: s.Addr()})
-	t.Cleanup(func() { rdb.Close() })
+	t.Cleanup(func() { _ = rdb.Close() })
 	return rdb
 }
 

@@ -103,7 +103,7 @@ func TestScheduler_WithLockKey(t *testing.T) {
 	defer mr.Close()
 
 	rdb := redis.NewClient(&redis.Options{Addr: mr.Addr()})
-	defer rdb.Close()
+	defer func() { _ = rdb.Close() }()
 
 	locker := lock.New(rdb)
 	var count int64
