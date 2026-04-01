@@ -88,7 +88,10 @@ func (p *aliyunSMSProvider) SendSMS(ctx context.Context, phone, content string) 
 	}
 	defer func() { _ = resp.Body.Close() }()
 
-	body, _ := io.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return fmt.Errorf("sms: read response: %w", err)
+	}
 
 	if resp.StatusCode >= 400 {
 		return fmt.Errorf("sms: aliyun returned %d: %s", resp.StatusCode, string(body))
@@ -98,7 +101,10 @@ func (p *aliyunSMSProvider) SendSMS(ctx context.Context, phone, content string) 
 		Code    string `json:"Code"`
 		Message string `json:"Message"`
 	}
-	if err := json.Unmarshal(body, &result); err == nil && result.Code != "OK" {
+	if err := json.Unmarshal(body, &result); err != nil {
+		return fmt.Errorf("sms: unmarshal response: %w", err)
+	}
+	if result.Code != "OK" {
 		return fmt.Errorf("sms: aliyun error %s: %s", result.Code, result.Message)
 	}
 

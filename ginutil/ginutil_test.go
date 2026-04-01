@@ -155,6 +155,36 @@ func TestGetUserID_WrongType(t *testing.T) {
 	}
 }
 
+func TestGetUserID_TypeSwitch(t *testing.T) {
+	tests := []struct {
+		name  string
+		value interface{}
+		want  uint64
+	}{
+		{"uint64", uint64(123), 123},
+		{"int64", int64(42), 42},
+		{"int", int(99), 99},
+		{"float64", float64(55), 55},
+		{"negative_int64", int64(-1), 0},
+		{"negative_float64", float64(-1), 0},
+		{"string", "not-a-number", 0},
+		{"nil", nil, 0},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			w := httptest.NewRecorder()
+			c, _ := gin.CreateTestContext(w)
+			if tt.value != nil {
+				c.Set("user_id", tt.value)
+			}
+			got := GetUserID(c)
+			if got != tt.want {
+				t.Errorf("GetUserID() = %d, want %d", got, tt.want)
+			}
+		})
+	}
+}
+
 // ── GetRole Tests ───────────────────────────────────────────────
 
 func TestGetRole_Set(t *testing.T) {

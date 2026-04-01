@@ -49,6 +49,17 @@ func (s *Scheduler) Start(ctx context.Context) {
 func (s *Scheduler) run(ctx context.Context, task Task) {
 	defer s.wg.Done()
 
+	if task.Interval <= 0 {
+		logger.Error("scheduler: invalid interval, skipping task",
+			zap.String("task", task.Name), zap.Duration("interval", task.Interval))
+		return
+	}
+	if task.Fn == nil {
+		logger.Error("scheduler: nil function, skipping task",
+			zap.String("task", task.Name))
+		return
+	}
+
 	ticker := time.NewTicker(task.Interval)
 	defer ticker.Stop()
 

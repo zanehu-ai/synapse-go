@@ -21,6 +21,20 @@ func (m *mockMailer) Send(to, subject, body string) error {
 	return nil
 }
 
+// failNMailer fails the first failCount calls, then succeeds.
+type failNMailer struct {
+	failCount int
+	calls     int
+}
+
+func (m *failNMailer) Send(_, _, _ string) error {
+	m.calls++
+	if m.calls <= m.failCount {
+		return errors.New("transient failure")
+	}
+	return nil
+}
+
 func TestEmailNotifier_Send(t *testing.T) {
 	m := &mockMailer{}
 	n := NewEmail(m)
@@ -81,6 +95,42 @@ func TestWebhookNotifier_ServerError(t *testing.T) {
 func TestWithRetry_SuccessOnFirstAttempt(t *testing.T) {
 	m := &mockMailer{}
 	n := WithRetry(NewEmail(m), 2)
+
+	err := n.Send(context.Background(), Message{To: "a@b.com", Subject: "hi", Body: "hello"})
+	if err != nil {
+		t.Fatalf("Send() error: %v", err)
+	}
+	if len(m.sent) != 1 {
+		t.Errorf("expected 1 send, got %d", len(m.sent))
+	}
+}
+
+func TestWithRetry_SucceedsAfterRetries(t *testing.T) {
+	fm := &failNMailer{failCount: 2}
+	n := WithRetry(NewEmail(fm), 3)
+
+	err := n.Send(context.Background(), Message{To: "a@b.com", Subject: "hi", Body: "hello"})
+	if err != nil {
+		t.Fatalf("Send() error: %v", err)
+	}
+	if fm.calls != 3 {
+		t.Errorf("expected 3 calls (2 fail + 1 success), got %d", fm.calls)
+	}
+}
+
+func TestWithRetry_AllRetriesExhausted(t *testing.T) {
+	m := &mockMailer{err: errors.New("persistent failure")}
+	n := WithRetry(NewEmail(m), 2)
+
+	err := n.Send(context.Background(), Message{To: "a@b.com", Subject: "hi", Body: "hello"})
+	if err == nil {
+		t.Error("expected error when all retries exhausted")
+	}
+}
+
+func TestWithRetry_NegativeMaxRetries_StillSendsOnce(t *testing.T) {
+	m := &mockMailer{}
+	n := WithRetry(NewEmail(m), -1)
 
 	err := n.Send(context.Background(), Message{To: "a@b.com", Subject: "hi", Body: "hello"})
 	if err != nil {

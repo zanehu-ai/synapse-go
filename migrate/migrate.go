@@ -15,6 +15,9 @@ import (
 // If forceVersion > 0, it forces the schema_migrations table to that version
 // first (useful for bootstrapping an existing database).
 func Run(dsn, migrationsPath string, forceVersion int, log *zap.Logger) error {
+	if log == nil {
+		log = zap.NewNop()
+	}
 	dbURL, err := ToMigrateURL(dsn)
 	if err != nil {
 		return fmt.Errorf("build migrate URL: %w", err)

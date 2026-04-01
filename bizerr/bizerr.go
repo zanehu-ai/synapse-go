@@ -46,6 +46,8 @@ func HTTPStatus(code int) int {
 		return http.StatusForbidden
 	case resp.CodeNotFound:
 		return http.StatusNotFound
+	case resp.CodeConflict:
+		return http.StatusConflict
 	case resp.CodeInternal:
 		return http.StatusInternalServerError
 	default:
@@ -56,6 +58,9 @@ func HTTPStatus(code int) int {
 // HandleError inspects err: if it is a BizError, responds with the mapped HTTP
 // status and business code; otherwise falls back to 500 InternalError.
 func HandleError(c *gin.Context, err error) {
+	if err == nil {
+		return
+	}
 	var bizErr *BizError
 	if errors.As(err, &bizErr) {
 		resp.Error(c, HTTPStatus(bizErr.Code), bizErr.Code, bizErr.Message)

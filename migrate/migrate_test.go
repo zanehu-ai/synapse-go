@@ -2,6 +2,8 @@ package migrate
 
 import (
 	"testing"
+
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 func TestToMigrateURL(t *testing.T) {
@@ -47,6 +49,14 @@ func TestToMigrateURL(t *testing.T) {
 			false,
 		},
 	}
+
+	// TC-EXCEPTION-MIGRATE-002: nil logger does not panic
+	t.Run("nil logger", func(t *testing.T) {
+		err := Run("", "file://./testdata", 0, nil)
+		if err == nil {
+			t.Error("expected error for empty DSN")
+		}
+	})
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

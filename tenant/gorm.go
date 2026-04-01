@@ -1,11 +1,16 @@
 package tenant
 
 import (
+	"errors"
 	"fmt"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
+
+// ErrMissingTenantID is returned when a GORM operation is attempted without
+// a tenant ID in the request context.
+var ErrMissingTenantID = errors.New("tenant: missing tenant ID")
 
 // RegisterCallbacks registers GORM callbacks that automatically inject
 // a tenant filter (WHERE column = tenantID) on all query/update/delete operations.
@@ -22,6 +27,7 @@ func RegisterCallbacks(db *gorm.DB, column string) {
 		}
 		tenantID := FromContext(db.Statement.Context)
 		if tenantID == "" {
+			db.AddError(ErrMissingTenantID)
 			return
 		}
 		db.Statement.AddClause(clause.Where{
@@ -37,6 +43,7 @@ func RegisterCallbacks(db *gorm.DB, column string) {
 		}
 		tenantID := FromContext(db.Statement.Context)
 		if tenantID == "" {
+			db.AddError(ErrMissingTenantID)
 			return
 		}
 		db.Statement.SetColumn(column, tenantID)

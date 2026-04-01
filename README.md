@@ -59,6 +59,7 @@ go get github.com/techfitmaster/synapse-go@latest
 
 ```go
 import (
+    "github.com/gin-gonic/gin"
     "github.com/techfitmaster/synapse-go/config"
     "github.com/techfitmaster/synapse-go/db"
     "github.com/techfitmaster/synapse-go/logger"

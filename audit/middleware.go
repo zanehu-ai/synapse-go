@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/techfitmaster/synapse-go/ginutil"
 )
 
 // Middleware returns a Gin middleware that automatically logs write operations
@@ -24,7 +26,7 @@ func Middleware(store Store) gin.HandlerFunc {
 
 		c.Next()
 
-		userID := c.GetInt64("user_id")
+		userID := int64(ginutil.GetUserID(c))
 		username := c.GetString("username")
 		status := c.Writer.Status()
 		path := c.Request.URL.Path

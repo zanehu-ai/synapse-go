@@ -58,6 +58,38 @@ func TestLocalStorage_DeleteNonExistent(t *testing.T) {
 	}
 }
 
+func TestLocalStorage_PathTraversal(t *testing.T) {
+	dir := t.TempDir()
+	s := NewLocal(dir, "http://localhost:8080/files")
+
+	keys := []string{
+		"../../../etc/passwd",
+		"../../escape",
+		"../outside",
+		"subdir/../../outside",
+	}
+	for _, key := range keys {
+		t.Run("Upload_"+key, func(t *testing.T) {
+			_, err := s.Upload(context.Background(), key, strings.NewReader("data"), "text/plain")
+			if err == nil {
+				t.Error("expected error for path traversal key")
+			}
+		})
+		t.Run("Delete_"+key, func(t *testing.T) {
+			err := s.Delete(context.Background(), key)
+			if err == nil {
+				t.Error("expected error for path traversal key")
+			}
+		})
+		t.Run("PresignedURL_"+key, func(t *testing.T) {
+			_, err := s.PresignedURL(context.Background(), key, 0)
+			if err == nil {
+				t.Error("expected error for path traversal key")
+			}
+		})
+	}
+}
+
 func TestLocalStorage_UploadCreatesSubdirs(t *testing.T) {
 	dir := t.TempDir()
 	s := NewLocal(dir, "http://localhost:8080/files")

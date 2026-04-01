@@ -63,7 +63,7 @@ func TestHTTPStatus(t *testing.T) {
 		{resp.CodeNotFound, http.StatusNotFound},
 		{resp.CodeInternal, http.StatusInternalServerError},
 		{resp.CodeBadRequest, http.StatusBadRequest},
-		{resp.CodeConflict, http.StatusBadRequest}, // default case
+		{resp.CodeConflict, http.StatusConflict},
 		{9999, http.StatusBadRequest},              // unknown code
 	}
 	for _, tt := range tests {
@@ -97,6 +97,16 @@ func TestHandleError_BizError(t *testing.T) {
 				t.Errorf("status = %d, want %d", w.Code, tt.wantStatus)
 			}
 		})
+	}
+}
+
+func TestHandleError_NilError(t *testing.T) {
+	w := httptest.NewRecorder()
+	c, _ := gin.CreateTestContext(w)
+	c.Request = httptest.NewRequest(http.MethodGet, "/", nil)
+	HandleError(c, nil)
+	if w.Code != http.StatusOK {
+		t.Errorf("status = %d, want 200 (no response written)", w.Code)
 	}
 }
 

@@ -2,10 +2,12 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -27,14 +29,31 @@ type LocalStorage struct {
 }
 
 // NewLocal creates a LocalStorage that saves files to basePath
-// and returns URLs prefixed with baseURL.
+// and returns URLs prefixed with baseURL. basePath is resolved to an absolute
+// path at construction time.
 func NewLocal(basePath, baseURL string) *LocalStorage {
-	return &LocalStorage{basePath: basePath, baseURL: baseURL}
+	abs, err := filepath.Abs(basePath)
+	if err != nil {
+		abs = basePath
+	}
+	return &LocalStorage{basePath: abs, baseURL: baseURL}
+}
+
+// safePath validates and resolves key to an absolute path within basePath.
+func (s *LocalStorage) safePath(key string) (string, error) {
+	fullPath := filepath.Join(s.basePath, key)
+	if !strings.HasPrefix(fullPath, s.basePath+string(filepath.Separator)) && fullPath != s.basePath {
+		return "", errors.New("storage: key escapes base directory")
+	}
+	return fullPath, nil
 }
 
 // Upload saves the data to a local file and returns the URL.
 func (s *LocalStorage) Upload(_ context.Context, key string, reader io.Reader, _ string) (string, error) {
-	fullPath := filepath.Join(s.basePath, key)
+	fullPath, err := s.safePath(key)
+	if err != nil {
+		return "", err
+	}
 
 	dir := filepath.Dir(fullPath)
 	if err := os.MkdirAll(dir, 0o755); err != nil {
@@ -56,7 +75,10 @@ func (s *LocalStorage) Upload(_ context.Context, key string, reader io.Reader, _
 
 // Delete removes the file at the given key.
 func (s *LocalStorage) Delete(_ context.Context, key string) error {
-	fullPath := filepath.Join(s.basePath, key)
+	fullPath, err := s.safePath(key)
+	if err != nil {
+		return err
+	}
 	if err := os.Remove(fullPath); err != nil && !os.IsNotExist(err) {
 		return fmt.Errorf("storage delete: %w", err)
 	}
@@ -65,5 +87,8 @@ func (s *LocalStorage) Delete(_ context.Context, key string) error {
 
 // PresignedURL returns the direct URL for local storage (no expiry enforcement).
 func (s *LocalStorage) PresignedURL(_ context.Context, key string, _ time.Duration) (string, error) {
+	if _, err := s.safePath(key); err != nil {
+		return "", err
+	}
 	return s.baseURL + "/" + key, nil
 }

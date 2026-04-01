@@ -80,6 +80,20 @@ func TestNoopSMSProvider(t *testing.T) {
 	}
 }
 
+func TestAliyunSMS_UnmarshalError(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("not-json"))
+	}))
+	defer srv.Close()
+
+	provider := NewAliyunSMS(AliyunSMSConfig{Endpoint: srv.URL})
+	err := provider.SendSMS(context.Background(), "+8613800138000", "123456")
+	if err == nil {
+		t.Error("expected error for invalid JSON response")
+	}
+}
+
 func TestAliyunSMS_DefaultEndpoint(t *testing.T) {
 	provider := NewAliyunSMS(AliyunSMSConfig{})
 	p := provider.(*aliyunSMSProvider)

@@ -24,13 +24,31 @@ func ParseParam(c *gin.Context, name string) (int64, bool) {
 	return id, true
 }
 
-// GetUserID reads "user_id" (uint64) from the gin context.
+// GetUserID reads "user_id" from the gin context.
+// Handles uint64, int64, int, and float64 (JWT MapClaims decodes numbers as float64).
 func GetUserID(c *gin.Context) uint64 {
 	v, _ := c.Get("user_id")
-	if id, ok := v.(uint64); ok {
+	switch id := v.(type) {
+	case uint64:
 		return id
+	case int64:
+		if id < 0 {
+			return 0
+		}
+		return uint64(id)
+	case int:
+		if id < 0 {
+			return 0
+		}
+		return uint64(id)
+	case float64:
+		if id < 0 {
+			return 0
+		}
+		return uint64(id)
+	default:
+		return 0
 	}
-	return 0
 }
 
 // GetRole reads "role" (string) from the gin context.

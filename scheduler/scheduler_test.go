@@ -95,6 +95,27 @@ func TestScheduler_StopsOnCancel(t *testing.T) {
 	}
 }
 
+func TestScheduler_InvalidTask_NoPanic(t *testing.T) {
+	noop := func(ctx context.Context) error { return nil }
+	tests := []struct {
+		name string
+		task Task
+	}{
+		{"zero interval", Task{Name: "zero", Interval: 0, Fn: noop}},
+		{"negative interval", Task{Name: "neg", Interval: -1 * time.Second, Fn: noop}},
+		{"nil function", Task{Name: "nilFn", Interval: 50 * time.Millisecond, Fn: nil}},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := New(nil)
+			s.Register(tt.task)
+			ctx, cancel := context.WithTimeout(context.Background(), 100*time.Millisecond)
+			defer cancel()
+			s.Start(ctx)
+		})
+	}
+}
+
 func TestScheduler_WithLockKey(t *testing.T) {
 	mr, err := miniredis.Run()
 	if err != nil {

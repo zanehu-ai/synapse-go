@@ -113,6 +113,9 @@ type retryNotifier struct {
 // WithRetry wraps a Notifier to retry failed sends up to maxRetries times
 // with exponential backoff (1s, 2s, 4s, ...).
 func WithRetry(n Notifier, maxRetries int) Notifier {
+	if maxRetries < 0 {
+		maxRetries = 0
+	}
 	return &retryNotifier{inner: n, maxRetries: maxRetries}
 }
 
