@@ -2,7 +2,7 @@
   {
     "id": "valid-platform",
     "description": "Valid platform-admin token; principal_id=42, role_codes=[platform.admin], token_version=1",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcmluY2lwYWxfaWQiOjQyLCJwcmluY2lwYWxfdHlwZSI6InBsYXRmb3JtX2FkbWluIiwicm9sZV9jb2RlcyI6WyJwbGF0Zm9ybS5hZG1pbiJdLCJ0b2tlbl92ZXJzaW9uIjoxLCJ0b2tlbl90eXBlIjoicGxhdGZvcm0iLCJpc3MiOiJzeW5hcHNlLXRlc3QiLCJhdWQiOlsic3luYXBzZSJdLCJleHAiOjE3Nzg3MjY4NjksImlhdCI6MTc3ODcyMzI2OX0.lQpgHs7lorGSmc0Tw7BHGsBSx-NnRXSi6DeCgPdZlVM",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcmluY2lwYWxfaWQiOjQyLCJwcmluY2lwYWxfdHlwZSI6InBsYXRmb3JtX2FkbWluIiwicm9sZV9jb2RlcyI6WyJwbGF0Zm9ybS5hZG1pbiJdLCJ0b2tlbl92ZXJzaW9uIjoxLCJ0b2tlbl90eXBlIjoicGxhdGZvcm0iLCJpc3MiOiJzeW5hcHNlLXRlc3QiLCJhdWQiOlsic3luYXBzZSJdLCJleHAiOjIwOTQxMjAwMDAsImlhdCI6MTc3ODc2MDAwMH0.9ycOvkT-y1NHiWwptT1CwTDbOyskouXLEfs8HxIpiV0",
     "shared_secret": "interop-shared-secret-32chars!!1",
     "expect_valid": true,
     "expect_claims": {
@@ -15,7 +15,7 @@
   {
     "id": "valid-tenant",
     "description": "Valid tenant token; tenant_id=10, tenant_code=game-cn, principal_id=5, actor_principal_id=99",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5hbnRfaWQiOjEwLCJ0ZW5hbnRfY29kZSI6ImdhbWUtY24iLCJwcmluY2lwYWxfaWQiOjUsInByaW5jaXBhbF90eXBlIjoidGVuYW50X2FkbWluIiwicm9sZV9jb2RlcyI6WyJ0ZW5hbnQuYWRtaW4iXSwidG9rZW5fdmVyc2lvbiI6MiwidG9rZW5fdHlwZSI6InRlbmFudCIsImFjdG9yX3ByaW5jaXBhbF9pZCI6OTksImlzcyI6InN5bmFwc2UtdGVzdCIsImF1ZCI6WyJzeW5hcHNlIl0sImV4cCI6MTc3ODgwOTY2OSwiaWF0IjoxNzc4NzIzMjY5fQ.LWP8y4wKSLEE62P8uh4EsG6t6-92VPadO928ZTdEqZ0",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0ZW5hbnRfaWQiOjEwLCJ0ZW5hbnRfY29kZSI6ImdhbWUtY24iLCJwcmluY2lwYWxfaWQiOjUsInByaW5jaXBhbF90eXBlIjoidGVuYW50X2FkbWluIiwicm9sZV9jb2RlcyI6WyJ0ZW5hbnQuYWRtaW4iXSwidG9rZW5fdmVyc2lvbiI6MiwidG9rZW5fdHlwZSI6InRlbmFudCIsImFjdG9yX3ByaW5jaXBhbF9pZCI6OTksImlzcyI6InN5bmFwc2UtdGVzdCIsImF1ZCI6WyJzeW5hcHNlIl0sImV4cCI6MjA5NDEyMDAwMCwiaWF0IjoxNzc4NzYwMDAwfQ.gD5Y0jF1JJquo3y1PWL9lpRjUwyo3UKAOqR57cp-I7E",
     "shared_secret": "interop-shared-secret-32chars!!1",
     "expect_valid": true,
     "expect_claims": {
@@ -30,8 +30,8 @@
   },
   {
     "id": "valid-step-up",
-    "description": "Valid step-up token; principal_id=7, scope=cargo.wallet-adjust, TTL=5m",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcmluY2lwYWxfaWQiOjcsInNjb3BlIjoiY2FyZ28ud2FsbGV0LWFkanVzdCIsInRva2VuX3R5cGUiOiJzdGVwX3VwIiwiaXNzIjoic3luYXBzZS10ZXN0IiwiYXVkIjpbInN5bmFwc2UiXSwiZXhwIjoxNzc4NzIzNTY5LCJpYXQiOjE3Nzg3MjMyNjl9.xzWGXB0hFCSZrnppBq3L6vLfNxU3d3OUGhaA9mXIock",
+    "description": "Valid step-up token; principal_id=7, scope=cargo.wallet-adjust, long-lived fixture TTL",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcmluY2lwYWxfaWQiOjcsInNjb3BlIjoiY2FyZ28ud2FsbGV0LWFkanVzdCIsInRva2VuX3R5cGUiOiJzdGVwX3VwIiwiaXNzIjoic3luYXBzZS10ZXN0IiwiYXVkIjpbInN5bmFwc2UiXSwiZXhwIjoyMDk0MTIwMDAwLCJpYXQiOjE3Nzg3NjAwMDB9.d4QDaIOpZUiF5hoNFOmj7wQWoVyhcPfunRcyD6LgLiA",
     "shared_secret": "interop-shared-secret-32chars!!1",
     "expect_valid": true,
     "expect_claims": {
@@ -43,21 +43,21 @@
   {
     "id": "expired",
     "description": "Expired platform token; exp is 1 hour in the past — verifier must reject",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcmluY2lwYWxfaWQiOjgsInByaW5jaXBhbF90eXBlIjoicGxhdGZvcm1fYWRtaW4iLCJyb2xlX2NvZGVzIjpbInBsYXRmb3JtLmFkbWluIl0sInRva2VuX3ZlcnNpb24iOjEsInRva2VuX3R5cGUiOiJwbGF0Zm9ybSIsImlzcyI6InN5bmFwc2UtdGVzdCIsImV4cCI6MTc3ODcxNjA2OSwiaWF0IjoxNzc4NzEyNDY5fQ.k3D8qfA4M5OqeABMzM59rZ1SmFCLIFWK4VCKc_v2VFI",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcmluY2lwYWxfaWQiOjgsInByaW5jaXBhbF90eXBlIjoicGxhdGZvcm1fYWRtaW4iLCJyb2xlX2NvZGVzIjpbInBsYXRmb3JtLmFkbWluIl0sInRva2VuX3ZlcnNpb24iOjEsInRva2VuX3R5cGUiOiJwbGF0Zm9ybSIsImlzcyI6InN5bmFwc2UtdGVzdCIsImV4cCI6MTc3ODc1MjgwMCwiaWF0IjoxNzc4NzQ5MjAwfQ.2uNQ0S0rumCLNSDMcDNC0qr50kZ6vTj9jTVwj8809SA",
     "shared_secret": "interop-shared-secret-32chars!!1",
     "expect_valid": false
   },
   {
     "id": "wrong-signature",
     "description": "Token signed with a different secret; verifier with interop secret must reject (SignatureException)",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcmluY2lwYWxfaWQiOjExLCJwcmluY2lwYWxfdHlwZSI6InBsYXRmb3JtX2FkbWluIiwicm9sZV9jb2RlcyI6WyJwbGF0Zm9ybS5hZG1pbiJdLCJ0b2tlbl92ZXJzaW9uIjoxLCJ0b2tlbl90eXBlIjoicGxhdGZvcm0iLCJpc3MiOiJzeW5hcHNlLXRlc3QiLCJhdWQiOlsic3luYXBzZSJdLCJleHAiOjE3Nzg3MjY4NjksImlhdCI6MTc3ODcyMzI2OX0.hKvTpcGKshR1AETtMIaXSjMdXZEW6rU_K6QztOxbsS8",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcmluY2lwYWxfaWQiOjExLCJwcmluY2lwYWxfdHlwZSI6InBsYXRmb3JtX2FkbWluIiwicm9sZV9jb2RlcyI6WyJwbGF0Zm9ybS5hZG1pbiJdLCJ0b2tlbl92ZXJzaW9uIjoxLCJ0b2tlbl90eXBlIjoicGxhdGZvcm0iLCJpc3MiOiJzeW5hcHNlLXRlc3QiLCJhdWQiOlsic3luYXBzZSJdLCJleHAiOjIwOTQxMjAwMDAsImlhdCI6MTc3ODc2MDAwMH0.m9J6x6zVvl8hgFsmV1QMQXIIPYyAQjlbRTL1Znckmpk",
     "shared_secret": "interop-shared-secret-32chars!!1",
     "expect_valid": false
   },
   {
     "id": "missing-token-type",
     "description": "Token with valid signature but no token_type claim; ParsePlatformToken must return ErrWrongType",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcmluY2lwYWxfaWQiOjk5LCJpc3MiOiJzeW5hcHNlLXRlc3QiLCJleHAiOjE3Nzg3MjY4NjksImlhdCI6MTc3ODcyMzI2OX0.svBx9j1NiLjGH22EbSS2Ck5JSIPYRkkdNCAHaY_mwVo",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcmluY2lwYWxfaWQiOjk5LCJpc3MiOiJzeW5hcHNlLXRlc3QiLCJleHAiOjIwOTQxMjAwMDAsImlhdCI6MTc3ODc2MDAwMH0.Oz6fquAQ2lzAHKquObIsrnoWQxEQ9zhu0xhBDAkUvK4",
     "shared_secret": "interop-shared-secret-32chars!!1",
     "expect_valid": false
   }

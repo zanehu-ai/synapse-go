@@ -92,3 +92,17 @@ func TestNormalizeCategory(t *testing.T) {
 		t.Fatalf("NormalizeCategory error = %v, want ErrInvalidUpload", err)
 	}
 }
+
+func TestBuildObjectKeyRejectsUnsafeTenantID(t *testing.T) {
+	_, err := BuildObjectKey(ObjectKeyInput{
+		Namespace:   "platform",
+		TenantID:    "tenant/../other",
+		Category:    "avatar",
+		ContentType: "image/png",
+		ObjectID:    "obj-1",
+		Now:         time.Date(2026, 4, 23, 0, 0, 0, 0, time.UTC),
+	})
+	if !errors.Is(err, ErrInvalidObjectKey) {
+		t.Fatalf("BuildObjectKey error = %v, want ErrInvalidObjectKey", err)
+	}
+}

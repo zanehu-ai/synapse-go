@@ -18,3 +18,16 @@ func TestIntAcceptsCommonJSONNumberShapes(t *testing.T) {
 		}
 	}
 }
+
+func TestIntRejectsOverflowAndFractionalValues(t *testing.T) {
+	payload := map[string]any{
+		"overflow": json.Number("9223372036854775808"),
+		"fraction": 1.5,
+		"jsonfrac": json.Number("1.5"),
+	}
+	for _, key := range []string{"overflow", "fraction", "jsonfrac"} {
+		if got := Int(payload, key, 7); got != 7 {
+			t.Fatalf("Int(%q) = %d, want default", key, got)
+		}
+	}
+}

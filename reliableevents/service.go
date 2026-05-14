@@ -67,8 +67,14 @@ func (s *Service) BuildOutbox(in PublishInput) (*Outbox, error) {
 	if in.TenantID == 0 || in.EventType == "" || in.Source == "" || len(in.EventID) > 32 {
 		return nil, ErrInvalidInput
 	}
-	actor, _ := json.Marshal(in.Actor)
-	payload, _ := json.Marshal(in.Payload)
+	actor, err := json.Marshal(in.Actor)
+	if err != nil {
+		return nil, ErrInvalidInput
+	}
+	payload, err := json.Marshal(in.Payload)
+	if err != nil {
+		return nil, ErrInvalidInput
+	}
 	eventID := in.EventID
 	if eventID == "" {
 		eventID = newEventID()

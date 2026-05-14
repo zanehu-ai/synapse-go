@@ -38,3 +38,11 @@ func TestCheckPermissionDenied(t *testing.T) {
 		t.Fatalf("expected ErrPermissionDenied, got %v", err)
 	}
 }
+
+func TestCheckPermissionRejectsPartialEmptyRequest(t *testing.T) {
+	for _, tc := range []struct{ resource, action string }{{"", "read"}, {"cargo", ""}} {
+		if err := CheckPermission([]string{"*"}, tc.resource, tc.action); !errors.Is(err, ErrPermissionDenied) {
+			t.Fatalf("CheckPermission(%q,%q) error = %v, want ErrPermissionDenied", tc.resource, tc.action, err)
+		}
+	}
+}

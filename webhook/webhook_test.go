@@ -63,3 +63,11 @@ func TestHeaderShape(t *testing.T) {
 		t.Fatalf("header = %q, want t/v1 shape", header)
 	}
 }
+
+func TestComputeSignatureDeterministic(t *testing.T) {
+	got := ComputeSignature("secret", 123, []byte("body"))
+	want := "fa1c6a291939b89044717d74b55fe23e137acf3edd31d2992540f037f035357a"
+	if got != want {
+		t.Fatalf("ComputeSignature() = %q, want %q", got, want)
+	}
+}

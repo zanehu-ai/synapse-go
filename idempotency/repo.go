@@ -54,9 +54,6 @@ func (r *Repo) Complete(ctx context.Context, id uint64, status string, responseS
 	if res.Error != nil {
 		return res.Error
 	}
-	if res.RowsAffected == 0 {
-		return ErrNotFound
-	}
 	return nil
 }
 
@@ -71,9 +68,6 @@ func (r *Repo) Restart(ctx context.Context, id uint64, requestHash string, runni
 		})
 	if res.Error != nil {
 		return res.Error
-	}
-	if res.RowsAffected == 0 {
-		return ErrNotFound
 	}
 	return nil
 }

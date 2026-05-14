@@ -122,6 +122,7 @@ type TokenService struct {
 	audience string
 	platTTL  time.Duration
 	tenTTL   time.Duration
+	now      func() time.Time
 }
 
 // NewTokenService creates a TokenService.
@@ -149,11 +150,19 @@ func NewTokenServiceWithAudience(secret, issuer, audience string, platTTLSec, te
 		audience: audience,
 		platTTL:  time.Duration(platTTLSec) * time.Second,
 		tenTTL:   time.Duration(tenTTLSec) * time.Second,
+		now:      time.Now,
 	}, nil
 }
 
 // Audience returns the configured JWT audience.
 func (s *TokenService) Audience() string { return s.audience }
+
+func (s *TokenService) currentTime() time.Time {
+	if s.now != nil {
+		return s.now()
+	}
+	return time.Now()
+}
 
 // TenantTTL returns the configured tenant token lifetime.
 // Exposed so callers (e.g. identity.Service) can compute token expiry
@@ -162,7 +171,7 @@ func (s *TokenService) TenantTTL() time.Duration { return s.tenTTL }
 
 // IssuePlatformToken signs a platform-admin JWT.
 func (s *TokenService) IssuePlatformToken(principalID uint64, roleCodes []string, tokenVersion int) (string, error) {
-	now := time.Now()
+	now := s.currentTime()
 	claims := PlatformClaims{
 		PrincipalID:   principalID,
 		PrincipalType: "platform_admin",
@@ -187,7 +196,7 @@ func (s *TokenService) IssueTenantToken(
 	roleCodes []string, tokenVersion int,
 	actorPrincipalID *uint64,
 ) (string, error) {
-	now := time.Now()
+	now := s.currentTime()
 	claims := TenantClaims{
 		TenantID:         tenantID,
 		TenantCode:       tenantCode,
@@ -253,7 +262,7 @@ func checkAudienceCompat(aud jwt.ClaimStrings, expected string) error {
 // Issued by the API after a re-auth challenge; consumed by
 // downstream services via ParseStepUpToken on the X-Step-Up-Token header.
 func (s *TokenService) IssueStepUpToken(principalID uint64, scope string, ttl time.Duration) (string, error) {
-	now := time.Now()
+	now := s.currentTime()
 	claims := StepUpClaims{
 		PrincipalID: principalID,
 		Scope:       scope,

@@ -57,7 +57,10 @@ type UploadRequest struct {
 	Now         time.Time
 }
 
-var categoryPattern = regexp.MustCompile(`^[a-z0-9][a-z0-9_-]{0,63}$`)
+var (
+	categoryPattern = regexp.MustCompile(`^[a-z0-9][a-z0-9_-]{0,63}$`)
+	tenantIDPattern = regexp.MustCompile(`^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$`)
+)
 
 func (p UploadPolicy) Validate(req UploadRequest) error {
 	if strings.TrimSpace(req.TenantID) == "" || req.SizeBytes < 0 {
@@ -150,7 +153,7 @@ func BuildObjectKey(in ObjectKeyInput) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	if tenantID == "" || objectID == "" || strings.Contains(objectID, "/") || strings.Contains(objectID, `\`) {
+	if !tenantIDPattern.MatchString(tenantID) || objectID == "" || strings.Contains(objectID, "/") || strings.Contains(objectID, `\`) {
 		return "", ErrInvalidObjectKey
 	}
 	namespace, err := normalizeNamespace(in.Namespace)

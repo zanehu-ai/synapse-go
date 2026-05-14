@@ -40,8 +40,12 @@ func (l Lease) HeldBy(owner string, now time.Time) bool {
 }
 
 func CanAcquire(existing *Lease, owner string, now time.Time) bool {
+	owner = strings.TrimSpace(owner)
+	if owner == "" {
+		return false
+	}
 	if existing == nil {
-		return strings.TrimSpace(owner) != ""
+		return true
 	}
 	return existing.HeldBy(owner, now) || existing.Expired(now)
 }

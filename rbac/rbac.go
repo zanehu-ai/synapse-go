@@ -47,7 +47,12 @@ func IsAllowed(granted []string, requested string) bool {
 // CheckPermission checks a subject permission collection against resource/action.
 // Supported subject forms are []string and interface{ PermissionCodes() []string }.
 func CheckPermission(subject any, resource string, action string) error {
-	requested := strings.Trim(strings.TrimSpace(resource), ".") + "." + strings.Trim(strings.TrimSpace(action), ".")
+	resource = strings.Trim(strings.TrimSpace(resource), ".")
+	action = strings.Trim(strings.TrimSpace(action), ".")
+	if resource == "" || action == "" {
+		return ErrPermissionDenied
+	}
+	requested := resource + "." + action
 	if requested == "." {
 		return ErrPermissionDenied
 	}
