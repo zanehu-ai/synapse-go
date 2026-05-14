@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "reference_impl": "synapse-go/utils/phone.go",
+  "is_valid": [
+    {
+      "name": "empty",
+      "input": "",
+      "expected": false
+    },
+    {
+      "name": "second_digit_3",
+      "input": "13012345678",
+      "expected": true
+    },
+    {
+      "name": "second_digit_4",
+      "input": "14012345678",
+      "expected": true
+    },
+    {
+      "name": "second_digit_5",
+      "input": "15012345678",
+      "expected": true
+    },
+    {
+      "name": "second_digit_6",
+      "input": "16012345678",
+      "expected": true
+    },
+    {
+      "name": "second_digit_7",
+      "input": "17012345678",
+      "expected": true
+    },
+    {
+      "name": "second_digit_8",
+      "input": "18012345678",
+      "expected": true
+    },
+    {
+      "name": "second_digit_9",
+      "input": "19012345678",
+      "expected": true
+    },
+    {
+      "name": "canonical_138",
+      "input": "13812345678",
+      "expected": true
+    },
+    {
+      "name": "second_digit_0",
+      "input": "10012345678",
+      "expected": false
+    },
+    {
+      "name": "second_digit_1",
+      "input": "11112345678",
+      "expected": false
+    },
+    {
+      "name": "second_digit_2",
+      "input": "12012345678",
+      "expected": false
+    },
+    {
+      "name": "leading_2",
+      "input": "23812345678",
+      "expected": false
+    },
+    {
+      "name": "leading_0",
+      "input": "03812345678",
+      "expected": false
+    },
+    {
+      "name": "too_short",
+      "input": "1381234567",
+      "expected": false
+    },
+    {
+      "name": "too_long",
+      "input": "138123456789",
+      "expected": false
+    },
+    {
+      "name": "alpha_in_middle",
+      "input": "138abcd5678",
+      "expected": false
+    }
+  ],
+  "mask": [
+    {
+      "name": "empty_passthrough",
+      "input": "",
+      "expected": ""
+    },
+    {
+      "name": "len_5_passthrough",
+      "input": "13812",
+      "expected": "13812"
+    },
+    {
+      "name": "len_10_passthrough",
+      "input": "1381234567",
+      "expected": "1381234567"
+    },
+    {
+      "name": "canonical_138",
+      "input": "13812345678",
+      "expected": "138****5678"
+    },
+    {
+      "name": "canonical_156",
+      "input": "15612345678",
+      "expected": "156****5678"
+    },
+    {
+      "name": "canonical_180",
+      "input": "18012345678",
+      "expected": "180****5678"
+    },
+    {
+      "name": "len_12_keeps_tail",
+      "input": "138123456789",
+      "expected": "138****56789"
+    },
+    {
+      "name": "len_14_keeps_tail",
+      "input": "13812345678999",
+      "expected": "138****5678999"
+    },
+    {
+      "name": "non_ascii_short_passthrough",
+      "input": "手机号123",
+      "expected": "手机号123"
+    }
+  ]
+}

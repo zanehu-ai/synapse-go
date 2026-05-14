@@ -1,0 +1,128 @@
+{
+  "version": 1,
+  "reference_impl": "synapse-go/utils/backoff.go @ commit 150c813cd9616395736dab695d35032296a7156d",
+  "description": "Cross-language parity vectors for ExponentialBackoffCalculator. Generated/refreshed by `cd synapse-go/utils && go test -update-fixtures .` (TestBackoffJSONFixtureRoundTrip with the -update-fixtures flag). Loaded by Go's TestBackoffJSONFixtureRoundTrip and Java's ExponentialBackoffCalculatorParityTest (which finds this file via filesystem walk-up). Path ③ (pure-function reimpl + shared fixtures) per docs/migration/c4b-wave-1-spec.md.",
+  "params": {
+    "initialDelayMs": 600000,
+    "multiplier": 2,
+    "maxDelayMs": 3153600000000,
+    "defaultMaxRetryCount": 5
+  },
+  "calculate_backoff": [
+    {
+      "name": "retry_count_0_java_initial_branch",
+      "retryCount": 0,
+      "expected_delay_ms": 600000,
+      "note": "Java retryCount<=0 returns initialIntervalMinutes (10m=600000ms). Go Calculator maps retryCount=0 to attempt=0."
+    },
+    {
+      "name": "retry_count_1_first_retry",
+      "retryCount": 1,
+      "expected_delay_ms": 600000,
+      "note": "First retry: initial * 2^0 = 10m"
+    },
+    {
+      "name": "retry_count_2_second_retry",
+      "retryCount": 2,
+      "expected_delay_ms": 1200000,
+      "note": "Second retry: initial * 2^1 = 20m"
+    },
+    {
+      "name": "retry_count_3_third_retry",
+      "retryCount": 3,
+      "expected_delay_ms": 2400000,
+      "note": "Third retry: initial * 2^2 = 40m"
+    },
+    {
+      "name": "retry_count_4_fourth_retry",
+      "retryCount": 4,
+      "expected_delay_ms": 4800000,
+      "note": "Fourth retry: initial * 2^3 = 80m"
+    },
+    {
+      "name": "retry_count_5_fifth_retry",
+      "retryCount": 5,
+      "expected_delay_ms": 9600000,
+      "note": "Fifth retry: initial * 2^4 = 160m. Reaches DEFAULT_MAX_RETRY_COUNT but math still returns the next interval."
+    },
+    {
+      "name": "retry_count_6_sixth_retry",
+      "retryCount": 6,
+      "expected_delay_ms": 19200000,
+      "note": "Sixth retry: initial * 2^5 = 320m"
+    },
+    {
+      "name": "retry_count_7_seventh_retry",
+      "retryCount": 7,
+      "expected_delay_ms": 38400000,
+      "note": "Seventh retry: initial * 2^6 = 640m"
+    },
+    {
+      "name": "retry_count_8_eighth_retry",
+      "retryCount": 8,
+      "expected_delay_ms": 76800000,
+      "note": "Eighth retry: initial * 2^7 = 1280m"
+    },
+    {
+      "name": "retry_count_10_above_default_max",
+      "retryCount": 10,
+      "expected_delay_ms": 307200000,
+      "note": "10th retry: initial * 2^9 = 5120m. Both Go (with sentinel ~100yr cap) and Java (no cap) compute identical value."
+    }
+  ],
+  "should_retry": [
+    {
+      "name": "below_max",
+      "retryCount": 2,
+      "max": 3,
+      "expected": true,
+      "note": "2 < 3"
+    },
+    {
+      "name": "at_max",
+      "retryCount": 3,
+      "max": 3,
+      "expected": false,
+      "note": "3 < 3 is false; boundary == permanent"
+    },
+    {
+      "name": "above_max",
+      "retryCount": 4,
+      "max": 3,
+      "expected": false
+    },
+    {
+      "name": "zero_under_default_max",
+      "retryCount": 0,
+      "max": 5,
+      "expected": true
+    },
+    {
+      "name": "one_below_default_max",
+      "retryCount": 4,
+      "max": 5,
+      "expected": true
+    }
+  ],
+  "is_permanent_failure": [
+    {
+      "name": "below_max",
+      "retryCount": 2,
+      "max": 3,
+      "expected": false
+    },
+    {
+      "name": "at_max",
+      "retryCount": 3,
+      "max": 3,
+      "expected": true,
+      "note": "Boundary: retryCount == max -> permanent"
+    },
+    {
+      "name": "above_max",
+      "retryCount": 4,
+      "max": 3,
+      "expected": true
+    }
+  ]
+}

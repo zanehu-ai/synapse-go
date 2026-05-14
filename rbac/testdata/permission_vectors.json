@@ -1,0 +1,188 @@
+{
+  "version": 1,
+  "reference_impl": "synapse-go/rbac/rbac.go",
+  "exact_match": [
+    {
+      "name": "exact_simple",
+      "granted": "cargo.read",
+      "requested": "cargo.read",
+      "expected": true
+    },
+    {
+      "name": "exact_deep",
+      "granted": "cargo.parcel.create",
+      "requested": "cargo.parcel.create",
+      "expected": true
+    },
+    {
+      "name": "exact_single_segment",
+      "granted": "admin",
+      "requested": "admin",
+      "expected": true
+    },
+    {
+      "name": "exact_case_sensitive_upper_no_match",
+      "granted": "Cargo.read",
+      "requested": "cargo.read",
+      "expected": false
+    },
+    {
+      "name": "exact_case_sensitive_lower_no_match",
+      "granted": "cargo.read",
+      "requested": "Cargo.read",
+      "expected": false
+    }
+  ],
+  "prefix_wildcard": [
+    {
+      "name": "prefix_one_level",
+      "granted": "cargo.*",
+      "requested": "cargo.parcel.create",
+      "expected": true
+    },
+    {
+      "name": "prefix_one_level_direct_child",
+      "granted": "cargo.*",
+      "requested": "cargo.read",
+      "expected": true
+    },
+    {
+      "name": "prefix_two_levels",
+      "granted": "cargo.parcel.*",
+      "requested": "cargo.parcel.delete",
+      "expected": true
+    },
+    {
+      "name": "prefix_two_levels_deep",
+      "granted": "cargo.parcel.*",
+      "requested": "cargo.parcel.sub.read",
+      "expected": true
+    },
+    {
+      "name": "prefix_exact_prefix_itself",
+      "granted": "cargo.*",
+      "requested": "cargo",
+      "expected": true
+    },
+    {
+      "name": "prefix_exact_prefix_two_levels",
+      "granted": "cargo.parcel.*",
+      "requested": "cargo.parcel",
+      "expected": true
+    },
+    {
+      "name": "prefix_wrong_domain",
+      "granted": "cargo.*",
+      "requested": "game.room.read",
+      "expected": false
+    },
+    {
+      "name": "prefix_partial_mismatch",
+      "granted": "cargo.parcel.*",
+      "requested": "cargo.parcelfoo.read",
+      "expected": false
+    }
+  ],
+  "global_wildcard": [
+    {
+      "name": "global_wildcard_any",
+      "granted": "*",
+      "requested": "tenant.create",
+      "expected": true
+    },
+    {
+      "name": "global_wildcard_deep",
+      "granted": "*",
+      "requested": "cargo.parcel.read",
+      "expected": true
+    },
+    {
+      "name": "global_wildcard_single",
+      "granted": "*",
+      "requested": "admin",
+      "expected": true
+    }
+  ],
+  "non_match": [
+    {
+      "name": "non_match_different_action",
+      "granted": "cargo.parcel.create",
+      "requested": "cargo.parcel.read",
+      "expected": false
+    },
+    {
+      "name": "non_match_different_resource",
+      "granted": "cargo.wallet.read",
+      "requested": "cargo.parcel.read",
+      "expected": false
+    },
+    {
+      "name": "non_match_prefix_not_global",
+      "granted": "cargo.*",
+      "requested": "game.room.read",
+      "expected": false
+    },
+    {
+      "name": "non_match_invalid_star_prefix",
+      "granted": "*foo",
+      "requested": "foo",
+      "expected": false
+    },
+    {
+      "name": "non_match_double_star",
+      "granted": "foo.**",
+      "requested": "foo.bar",
+      "expected": false
+    },
+    {
+      "name": "non_match_multi_wildcard",
+      "granted": "foo.*.*",
+      "requested": "foo.bar.baz",
+      "expected": false
+    }
+  ],
+  "edge_cases": [
+    {
+      "name": "edge_empty_granted",
+      "granted": "",
+      "requested": "cargo.read",
+      "expected": false
+    },
+    {
+      "name": "edge_empty_requested",
+      "granted": "cargo.*",
+      "requested": "",
+      "expected": false
+    },
+    {
+      "name": "edge_both_empty",
+      "granted": "",
+      "requested": "",
+      "expected": false
+    },
+    {
+      "name": "edge_whitespace_granted",
+      "granted": "  ",
+      "requested": "cargo.read",
+      "expected": false
+    },
+    {
+      "name": "edge_whitespace_requested",
+      "granted": "cargo.*",
+      "requested": "  ",
+      "expected": false
+    },
+    {
+      "name": "edge_granted_with_spaces_trimmed",
+      "granted": " cargo.read ",
+      "requested": "cargo.read",
+      "expected": true
+    },
+    {
+      "name": "edge_star_string_not_prefix_wildcard",
+      "granted": "*foo",
+      "requested": "*foo",
+      "expected": true
+    }
+  ]
+}

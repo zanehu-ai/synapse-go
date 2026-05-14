@@ -9,9 +9,9 @@ import (
 
 // ValidateConfig defines constraints for image validation.
 type ValidateConfig struct {
-	MaxFileSize int64    // max file size in bytes (0 = no limit)
-	MaxWidth    int      // max pixel width (0 = no limit)
-	MaxHeight   int      // max pixel height (0 = no limit)
+	MaxFileSize  int64    // max file size in bytes (0 = no limit)
+	MaxWidth     int      // max pixel width (0 = no limit)
+	MaxHeight    int      // max pixel height (0 = no limit)
 	AllowedTypes []string // allowed MIME sub-types: "jpeg", "png", "gif" (empty = allow all)
 }
 

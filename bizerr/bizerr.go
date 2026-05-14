@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/techfitmaster/synapse-go/resp"
+	"github.com/zanehu-ai/synapse-go/resp"
 )
 
 // BizError is a typed business error carrying an error code.

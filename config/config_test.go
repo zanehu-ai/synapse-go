@@ -40,3 +40,39 @@ func TestGetEnv_PreservesSpaces(t *testing.T) {
 		t.Errorf("GetEnv should preserve spaces, got %q", got)
 	}
 }
+
+func TestGetEnvInt(t *testing.T) {
+	t.Setenv("APP_PORT", "8080")
+	if got := GetEnvInt("APP_PORT", 3000); got != 8080 {
+		t.Fatalf("GetEnvInt = %d, want 8080", got)
+	}
+	t.Setenv("APP_BAD_PORT", "bad")
+	if got := GetEnvInt("APP_BAD_PORT", 3000); got != 3000 {
+		t.Fatalf("GetEnvInt fallback = %d, want 3000", got)
+	}
+}
+
+func TestGetEnvBool(t *testing.T) {
+	t.Setenv("APP_ENABLED", "true")
+	if !GetEnvBool("APP_ENABLED", false) {
+		t.Fatal("GetEnvBool = false, want true")
+	}
+	t.Setenv("APP_BAD_BOOL", "maybe")
+	if got := GetEnvBool("APP_BAD_BOOL", true); !got {
+		t.Fatal("GetEnvBool fallback = false, want true")
+	}
+}
+
+func TestGetEnvCSV(t *testing.T) {
+	t.Setenv("APP_CIDRS", "10.0.0.0/8, 192.0.2.0/24, ,")
+	got := GetEnvCSV("APP_CIDRS")
+	want := []string{"10.0.0.0/8", "192.0.2.0/24"}
+	if len(got) != len(want) {
+		t.Fatalf("GetEnvCSV len = %d, want %d (%v)", len(got), len(want), got)
+	}
+	for i := range want {
+		if got[i] != want[i] {
+			t.Fatalf("GetEnvCSV[%d] = %q, want %q", i, got[i], want[i])
+		}
+	}
+}
