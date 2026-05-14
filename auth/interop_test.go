@@ -107,13 +107,13 @@ func TestInteropWriteVectors(t *testing.T) {
 
 	// Case 3: step-up token
 	{
-		tok, err := svc.IssueStepUpToken(7, "cargo.wallet-adjust", 10*365*24*time.Hour)
+		tok, err := svc.IssueStepUpToken(7, "cargo.wallet-adjust", MaxStepUpTTL)
 		if err != nil {
 			t.Fatalf("case 3 issue: %v", err)
 		}
 		vectors = append(vectors, InteropVector{
 			ID:           "valid-step-up",
-			Description:  "Valid step-up token; principal_id=7, scope=cargo.wallet-adjust, long-lived fixture TTL",
+			Description:  "Valid step-up token; principal_id=7, scope=cargo.wallet-adjust, max allowed fixture TTL",
 			Token:        tok,
 			SharedSecret: interopSecret,
 			ExpectValid:  true,

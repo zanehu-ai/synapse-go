@@ -167,9 +167,7 @@ func (s *Service) GCJob(ctx context.Context, payload map[string]any) error {
 }
 
 func validRequestHash(hash string) bool {
-	if strings.HasPrefix(hash, hashPrefix) {
-		hash = strings.TrimPrefix(hash, hashPrefix)
-	}
+	hash = strings.TrimPrefix(hash, hashPrefix)
 	if len(hash) != 64 {
 		return false
 	}

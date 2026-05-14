@@ -172,6 +172,23 @@ func TestRequireFeaturePlatformShortCircuit(t *testing.T) {
 	}
 }
 
+func TestRequireFeatureNilCheckerFailsClosed(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
+	r.Use(injectTenantClaims(123))
+	r.Use(RequireFeature(nil, "payments"))
+	r.GET("/probe", func(c *gin.Context) { c.Status(http.StatusNoContent) })
+
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, httptest.NewRequest(http.MethodGet, "/probe", nil))
+	if w.Code != http.StatusInternalServerError {
+		t.Fatalf("status = %d, want 500", w.Code)
+	}
+	if !bytes.Contains(w.Body.Bytes(), []byte("feature check unavailable")) {
+		t.Fatalf("body = %s, want feature check unavailable", w.Body.String())
+	}
+}
+
 func TestRequireTenantActive(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	lookup := func(ctx context.Context, tenantID uint64) (int8, error) { return 0, nil }
@@ -184,6 +201,23 @@ func TestRequireTenantActive(t *testing.T) {
 	r.ServeHTTP(w, httptest.NewRequest(http.MethodGet, "/probe", nil))
 	if w.Code != http.StatusNoContent {
 		t.Fatalf("status = %d, want 204", w.Code)
+	}
+}
+
+func TestRequireTenantActiveNilLookupFailsClosed(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	r := gin.New()
+	r.Use(injectTenantClaims(7))
+	r.Use(RequireTenantActive(nil, nil))
+	r.GET("/probe", func(c *gin.Context) { c.Status(http.StatusNoContent) })
+
+	w := httptest.NewRecorder()
+	r.ServeHTTP(w, httptest.NewRequest(http.MethodGet, "/probe", nil))
+	if w.Code != http.StatusInternalServerError {
+		t.Fatalf("status = %d, want 500", w.Code)
+	}
+	if !bytes.Contains(w.Body.Bytes(), []byte("tenant status check unavailable")) {
+		t.Fatalf("body = %s, want tenant status check unavailable", w.Body.String())
 	}
 }
 

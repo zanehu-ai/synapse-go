@@ -30,8 +30,8 @@
   },
   {
     "id": "valid-step-up",
-    "description": "Valid step-up token; principal_id=7, scope=cargo.wallet-adjust, long-lived fixture TTL",
-    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcmluY2lwYWxfaWQiOjcsInNjb3BlIjoiY2FyZ28ud2FsbGV0LWFkanVzdCIsInRva2VuX3R5cGUiOiJzdGVwX3VwIiwiaXNzIjoic3luYXBzZS10ZXN0IiwiYXVkIjpbInN5bmFwc2UiXSwiZXhwIjoyMDk0MTIwMDAwLCJpYXQiOjE3Nzg3NjAwMDB9.d4QDaIOpZUiF5hoNFOmj7wQWoVyhcPfunRcyD6LgLiA",
+    "description": "Valid step-up token; principal_id=7, scope=cargo.wallet-adjust, max allowed fixture TTL",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcmluY2lwYWxfaWQiOjcsInNjb3BlIjoiY2FyZ28ud2FsbGV0LWFkanVzdCIsInRva2VuX3R5cGUiOiJzdGVwX3VwIiwiaXNzIjoic3luYXBzZS10ZXN0IiwiYXVkIjpbInN5bmFwc2UiXSwiZXhwIjoxNzc4NzYwMzAwLCJpYXQiOjE3Nzg3NjAwMDB9.NtgjZB19232q5vLhFgOVrbBAAlej-_HKX9TD1HqXF7o",
     "shared_secret": "interop-shared-secret-32chars!!1",
     "expect_valid": true,
     "expect_claims": {
