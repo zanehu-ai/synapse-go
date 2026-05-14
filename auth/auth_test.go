@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"errors"
 	"strings"
 	"testing"
 	"time"
@@ -203,6 +204,45 @@ func TestIssuedTokensCarryExpectedAudience(t *testing.T) {
 	}
 	if !containsAudience(stepUpClaims.Audience, ExpectedAudience) {
 		t.Errorf("step-up token missing audience %q (got %v)", ExpectedAudience, stepUpClaims.Audience)
+	}
+}
+
+func TestIssueStepUpTokenRejectsInvalidInputs(t *testing.T) {
+	svc := newTestSvc()
+	tests := []struct {
+		name        string
+		principalID uint64
+		scope       string
+		ttl         time.Duration
+	}{
+		{"zero_principal", 0, "test.scope", time.Minute},
+		{"blank_scope", 7, " ", time.Minute},
+		{"zero_ttl", 7, "test.scope", 0},
+		{"negative_ttl", 7, "test.scope", -time.Second},
+		{"too_long_ttl", 7, "test.scope", MaxStepUpTTL + time.Second},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := svc.IssueStepUpToken(tc.principalID, tc.scope, tc.ttl)
+			if !errors.Is(err, ErrInvalidStepUp) {
+				t.Fatalf("IssueStepUpToken() error = %v, want ErrInvalidStepUp", err)
+			}
+		})
+	}
+}
+
+func TestIssueStepUpTokenTrimsScopeAndAllowsMaxTTL(t *testing.T) {
+	svc := newTestSvc()
+	tok, err := svc.IssueStepUpToken(7, " test.scope ", MaxStepUpTTL)
+	if err != nil {
+		t.Fatalf("IssueStepUpToken: %v", err)
+	}
+	claims, err := svc.ParseStepUpToken(tok)
+	if err != nil {
+		t.Fatalf("ParseStepUpToken: %v", err)
+	}
+	if claims.Scope != "test.scope" {
+		t.Fatalf("scope = %q, want test.scope", claims.Scope)
 	}
 }
 

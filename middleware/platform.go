@@ -226,6 +226,10 @@ func RequireFeature(svc FeatureChecker, featureCode string) gin.HandlerFunc {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "tenant token required"})
 			return
 		}
+		if svc == nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "feature check unavailable"})
+			return
+		}
 		enabled, err := svc.IsEnabled(c.Request.Context(), claims.TenantID, featureCode)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "feature check failed"})
@@ -253,9 +257,6 @@ type StatusCache interface {
 
 // RequireTenantActive blocks tenant requests when the tenant is suspended or gone.
 func RequireTenantActive(lookup TenantStatusLookup, statusCache StatusCache) gin.HandlerFunc {
-	if lookup == nil {
-		return func(c *gin.Context) { c.Next() }
-	}
 	return func(c *gin.Context) {
 		if v, ok := c.Get("platform_claims"); ok && v != nil {
 			c.Next()
@@ -265,6 +266,10 @@ func RequireTenantActive(lookup TenantStatusLookup, statusCache StatusCache) gin
 		claims, ok := v.(*auth.TenantClaims)
 		if !exists || !ok || claims == nil || claims.TenantID == 0 {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "tenant token required"})
+			return
+		}
+		if lookup == nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "tenant status check unavailable"})
 			return
 		}
 		status, err := lookupStatus(c.Request.Context(), lookup, statusCache, claims.TenantID)

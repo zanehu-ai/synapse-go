@@ -32,8 +32,9 @@ import (
 )
 
 var (
-	ErrInvalidToken = errors.New("auth: invalid or expired token")
-	ErrWrongType    = errors.New("auth: token type mismatch")
+	ErrInvalidToken  = errors.New("auth: invalid or expired token")
+	ErrWrongType     = errors.New("auth: token type mismatch")
+	ErrInvalidStepUp = errors.New("auth: invalid step-up token request")
 )
 
 // DefaultAudience is the default audience string for Synapse-issued tokens.
@@ -59,6 +60,9 @@ var knownBadSecrets = []string{
 }
 
 const minSecretLen = 32
+
+// MaxStepUpTTL is the longest lifetime accepted for a step-up token.
+const MaxStepUpTTL = 5 * time.Minute
 
 // ValidateSecretStrength checks that secret meets the minimum bar for use as a
 // JWT signing key:
@@ -262,6 +266,10 @@ func checkAudienceCompat(aud jwt.ClaimStrings, expected string) error {
 // Issued by the API after a re-auth challenge; consumed by
 // downstream services via ParseStepUpToken on the X-Step-Up-Token header.
 func (s *TokenService) IssueStepUpToken(principalID uint64, scope string, ttl time.Duration) (string, error) {
+	scope = strings.TrimSpace(scope)
+	if principalID == 0 || scope == "" || ttl <= 0 || ttl > MaxStepUpTTL {
+		return "", ErrInvalidStepUp
+	}
 	now := s.currentTime()
 	claims := StepUpClaims{
 		PrincipalID: principalID,
