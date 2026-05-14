@@ -153,8 +153,16 @@ func (r *Redactor) RedactString(languageOrJurisdiction, s string) string {
 		for _, rl := range r.cn {
 			out = applyRule(out, rl)
 		}
-	case JurisdictionEN, "":
+	case JurisdictionEN:
 		// No jurisdiction-specific rules — universal-only.
+	case "":
+		// Empty jurisdiction → run BOTH RU and CN rule sets.
+		for _, rl := range r.ru {
+			out = applyRule(out, rl)
+		}
+		for _, rl := range r.cn {
+			out = applyRule(out, rl)
+		}
 	default:
 		// Unknown jurisdiction → run BOTH RU and CN rule sets.
 		for _, rl := range r.ru {

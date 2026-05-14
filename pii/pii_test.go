@@ -195,15 +195,15 @@ func TestRedactor_MultiplePIIInOneString(t *testing.T) {
 func TestRedactor_BankCardOutsideRangeUnchanged(t *testing.T) {
 	r := NewRedactor()
 	// 12 digits → not a bank card (and would match INN if RU jurisdiction
-	// active, which it isn't here — empty hint = universal only)
+	// active, which it isn't here — EN hint = universal only)
 	in := "ref 123456789012 ok"
-	got := r.RedactString("", in)
+	got := r.RedactString(JurisdictionEN, in)
 	if got != in {
 		// Universal rules apply — but bank-card regex requires 13+, so this
 		// shouldn't change. (If it does change, our regex is wrong.)
 		// Allow change only if the regex pattern matched a 13-digit substring;
 		// our input has 12 digits exactly, so we expect identity.
-		t.Errorf("12-digit string should not be redacted by universal-only, got %q", got)
+		t.Errorf("12-digit string should not be redacted by EN/universal-only, got %q", got)
 	}
 }
 
@@ -284,5 +284,13 @@ func TestRedactor_INNCandidateHelper(t *testing.T) {
 	}
 	if got := redactINNCandidate("123456789012"); got != "[REDACTED:INN]" {
 		t.Errorf("expected 12-digit INN redacted, got %q", got)
+	}
+}
+
+func TestRedactorEmptyHintRunsJurisdictionRules(t *testing.T) {
+	r := NewRedactor()
+	got := r.RedactString("", "SNILS 123-456-789 01 and phone 13812345678")
+	if !strings.Contains(got, "[REDACTED:SNILS]") || !strings.Contains(got, "138****5678") {
+		t.Fatalf("RedactString empty hint = %q, want RU and CN redaction", got)
 	}
 }

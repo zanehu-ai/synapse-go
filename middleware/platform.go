@@ -146,6 +146,8 @@ func PlatformToken(tokenSvc *auth.TokenService, tokenVersion TokenVersionLookup,
 				return
 			}
 		}
+		ctx := obs.WithPrincipalID(c.Request.Context(), claims.PrincipalID)
+		c.Request = c.Request.WithContext(ctx)
 		c.Set("platform_claims", claims)
 		if auth.IsExpiringSoon(claims, threshold) {
 			c.Header(HeaderTokenExpiringSoon, "true")
@@ -182,6 +184,9 @@ func TenantToken(tokenSvc *auth.TokenService, tokenVersion TokenVersionLookup, e
 				return
 			}
 		}
+		ctx := obs.WithTenantID(c.Request.Context(), claims.TenantID)
+		ctx = obs.WithPrincipalID(ctx, claims.PrincipalID)
+		c.Request = c.Request.WithContext(ctx)
 		c.Set("tenant_claims", claims)
 		if auth.IsExpiringSoon(claims, threshold) {
 			c.Header(HeaderTokenExpiringSoon, "true")

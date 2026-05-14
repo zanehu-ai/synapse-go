@@ -23,6 +23,8 @@ var (
 	ErrInvalidTTL = errors.New("lock: ttl must be positive")
 	// ErrEmptyKey is returned when key is empty.
 	ErrEmptyKey = errors.New("lock: key must not be empty")
+	// ErrNilClient is returned when a Redis-backed locker has no client.
+	ErrNilClient = errors.New("lock: redis client is nil")
 )
 
 // DistributedLocker acquires Redis locks with explicit owner handles.
@@ -104,6 +106,9 @@ end
 )
 
 func (l *redisDistributedLocker) Acquire(ctx context.Context, key string, ttl time.Duration) (LockHandle, error) {
+	if l == nil || l.client == nil {
+		return nil, ErrNilClient
+	}
 	if key == "" {
 		return nil, ErrEmptyKey
 	}
@@ -142,6 +147,9 @@ func (h *redisDistributedHandle) Key() string   { return h.key }
 func (h *redisDistributedHandle) Token() string { return h.token }
 
 func (h *redisDistributedHandle) Release(ctx context.Context) error {
+	if h == nil || h.client == nil {
+		return ErrNilClient
+	}
 	if !h.released.CompareAndSwap(false, true) {
 		return ErrAlreadyReleased
 	}
@@ -157,6 +165,9 @@ func (h *redisDistributedHandle) Release(ctx context.Context) error {
 }
 
 func (h *redisDistributedHandle) Renew(ctx context.Context, ttl time.Duration) error {
+	if h == nil || h.client == nil {
+		return ErrNilClient
+	}
 	if ttl <= 0 {
 		return ErrInvalidTTL
 	}

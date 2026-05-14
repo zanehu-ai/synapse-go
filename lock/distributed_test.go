@@ -94,3 +94,11 @@ func TestDistributedCustomPrefixAndInvalidArgs(t *testing.T) {
 		t.Fatalf("zero renew ttl err = %v, want ErrInvalidTTL", err)
 	}
 }
+
+func TestDistributedAcquireRejectsNilRedisClient(t *testing.T) {
+	locker := NewDistributed(nil)
+	_, err := locker.Acquire(context.Background(), "job", time.Second)
+	if !errors.Is(err, ErrNilClient) {
+		t.Fatalf("Acquire error = %v, want ErrNilClient", err)
+	}
+}

@@ -33,6 +33,8 @@ import (
 const interopSecret = "interop-shared-secret-32chars!!1"
 const interopIssuer = "synapse-test"
 
+var interopFixtureNow = time.Date(2026, 5, 14, 12, 0, 0, 0, time.UTC)
+
 // InteropVector represents a single test vector written to jwt_interop_vectors.json.
 type InteropVector struct {
 	// ID is a short human-readable identifier for the test case.
@@ -52,7 +54,8 @@ type InteropVector struct {
 }
 
 func TestInteropWriteVectors(t *testing.T) {
-	svc, _ := NewTokenService(interopSecret, interopIssuer, 3600, 86400)
+	svc, _ := NewTokenService(interopSecret, interopIssuer, 10*365*24*3600, 10*365*24*3600)
+	svc.now = func() time.Time { return interopFixtureNow }
 
 	vectors := make([]InteropVector, 0, 6)
 
@@ -104,13 +107,13 @@ func TestInteropWriteVectors(t *testing.T) {
 
 	// Case 3: step-up token
 	{
-		tok, err := svc.IssueStepUpToken(7, "cargo.wallet-adjust", 5*time.Minute)
+		tok, err := svc.IssueStepUpToken(7, "cargo.wallet-adjust", 10*365*24*time.Hour)
 		if err != nil {
 			t.Fatalf("case 3 issue: %v", err)
 		}
 		vectors = append(vectors, InteropVector{
 			ID:           "valid-step-up",
-			Description:  "Valid step-up token; principal_id=7, scope=cargo.wallet-adjust, TTL=5m",
+			Description:  "Valid step-up token; principal_id=7, scope=cargo.wallet-adjust, long-lived fixture TTL",
 			Token:        tok,
 			SharedSecret: interopSecret,
 			ExpectValid:  true,
@@ -124,7 +127,7 @@ func TestInteropWriteVectors(t *testing.T) {
 
 	// Case 4: expired token (backdated using raw jwt)
 	{
-		past := time.Now().Add(-2 * time.Hour)
+		past := interopFixtureNow.Add(-2 * time.Hour)
 		claims := PlatformClaims{
 			PrincipalID:   8,
 			PrincipalType: "platform_admin",
@@ -152,7 +155,8 @@ func TestInteropWriteVectors(t *testing.T) {
 
 	// Case 5: wrong signature (signed with different secret)
 	{
-		wrongSvc, _ := NewTokenService("a-different-secret-that-is-32ch!", interopIssuer, 3600, 86400)
+		wrongSvc, _ := NewTokenService("a-different-secret-that-is-32ch!", interopIssuer, 10*365*24*3600, 10*365*24*3600)
+		wrongSvc.now = func() time.Time { return interopFixtureNow }
 		tok, err := wrongSvc.IssuePlatformToken(11, []string{"platform.admin"}, 1)
 		if err != nil {
 			t.Fatalf("case 5 issue: %v", err)
@@ -176,8 +180,8 @@ func TestInteropWriteVectors(t *testing.T) {
 			PrincipalID: 99,
 			RegisteredClaims: jwt.RegisteredClaims{
 				Issuer:    interopIssuer,
-				IssuedAt:  jwt.NewNumericDate(time.Now()),
-				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
+				IssuedAt:  jwt.NewNumericDate(interopFixtureNow),
+				ExpiresAt: jwt.NewNumericDate(interopFixtureNow.Add(10 * 365 * 24 * time.Hour)),
 			},
 		}
 		tok, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(interopSecret))

@@ -69,7 +69,9 @@ func Middleware(svc *Service) gin.HandlerFunc {
 			if sensitive {
 				c.Writer.Header().Del("X-Idempotency-Sensitive")
 			}
-			_ = svc.Complete(c.Request.Context(), result.Record.ID, c.Writer.Status(), capture.body.String(), sensitive)
+			if err := svc.Complete(c.Request.Context(), result.Record.ID, c.Writer.Status(), capture.body.String(), sensitive); err != nil {
+				_ = c.Error(err)
+			}
 		}
 	}
 }
@@ -103,7 +105,10 @@ func idempotencyScope(c *gin.Context, body []byte) (tenantID, principalID uint64
 	if !exists || !typed || claims == nil || claims.PrincipalID == 0 {
 		return 0, 0, false
 	}
-	tid, _ := strconv.ParseUint(c.Query("tenant_id"), 10, 64)
+	tid, _ := strconv.ParseUint(c.Param("tenant_id"), 10, 64)
+	if tid == 0 {
+		tid, _ = strconv.ParseUint(c.Query("tenant_id"), 10, 64)
+	}
 	if tid == 0 && len(body) > 0 {
 		var req struct {
 			TenantID uint64 `json:"tenant_id"`
@@ -149,6 +154,6 @@ func writeMiddlewareError(c *gin.Context, err error) {
 	case errors.Is(err, ErrRequestMismatch), errors.Is(err, ErrRequestInProcess), errors.Is(err, ErrSensitiveResponse):
 		c.AbortWithStatusJSON(http.StatusConflict, gin.H{"error": err.Error()})
 	default:
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "idempotency operation failed"})
 	}
 }

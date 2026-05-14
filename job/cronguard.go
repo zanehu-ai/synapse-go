@@ -95,6 +95,9 @@ func Normalize(expr string) (string, error) {
 		if idx < 0 {
 			return "", fmt.Errorf("cron: malformed CRON_TZ prefix — expected CRON_TZ=<timezone> <fields>: %w", ErrCronMissingTZ)
 		}
+		if strings.TrimSpace(rest[:idx]) == "" {
+			return "", fmt.Errorf("cron: empty CRON_TZ prefix — expected CRON_TZ=<timezone> <fields>: %w", ErrCronMissingTZ)
+		}
 		schedulePart = rest[idx+1:]
 	}
 

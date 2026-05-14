@@ -13,7 +13,7 @@ type Record struct {
 	ID               uint64     `gorm:"primaryKey;autoIncrement"`
 	TenantID         uint64     `gorm:"not null;uniqueIndex:uk_idempotency_scope"`
 	PrincipalID      uint64     `gorm:"not null;uniqueIndex:uk_idempotency_scope"`
-	Key              string     `gorm:"column:idempotency_key;size:128;not null;uniqueIndex:uk_idempotency_scope"`
+	Key              string     `gorm:"column:idempotency_key;size:255;not null;uniqueIndex:uk_idempotency_scope"`
 	Method           string     `gorm:"size:16;not null;uniqueIndex:uk_idempotency_scope"`
 	Path             string     `gorm:"size:255;not null;uniqueIndex:uk_idempotency_scope"`
 	RequestHash      string     `gorm:"size:80;not null"`
