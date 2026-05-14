@@ -6,8 +6,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/techfitmaster/synapse-go/resp"
+	"github.com/zanehu-ai/synapse-go/resp"
 )
+
+// Tenant is the minimal reusable tenant identity shape.
+type Tenant struct {
+	ID   string
+	Code string
+	Name string
+}
 
 type contextKey struct{}
 

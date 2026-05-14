@@ -1,0 +1,253 @@
+{
+  "version": 1,
+  "reference_impl": "synapse-go/utils/ip.go",
+  "note": "Regenerate via: cd synapse-go/utils && go test -update-fixtures . — see C4b Wave 1 SPEC §1.2",
+  "parse_client_ip": [
+    {
+      "name": "empty",
+      "input": "",
+      "expected": ""
+    },
+    {
+      "name": "ipv6_loopback",
+      "input": "::1",
+      "expected": "::1"
+    },
+    {
+      "name": "leading_comma",
+      "input": ", 203.0.113.7",
+      "expected": ""
+    },
+    {
+      "name": "leading_whitespace_ipv4",
+      "input": "  203.0.113.7",
+      "expected": "203.0.113.7"
+    },
+    {
+      "name": "non_ip_garbage",
+      "input": "not-an-ip",
+      "expected": "not-an-ip"
+    },
+    {
+      "name": "plain_ipv4",
+      "input": "203.0.113.7",
+      "expected": "203.0.113.7"
+    },
+    {
+      "name": "plain_ipv6",
+      "input": "2001:db8::1",
+      "expected": "2001:db8::1"
+    },
+    {
+      "name": "trailing_comma",
+      "input": "203.0.113.7,",
+      "expected": "203.0.113.7"
+    },
+    {
+      "name": "unknown_lower",
+      "input": "unknown",
+      "expected": ""
+    },
+    {
+      "name": "unknown_mixed_case",
+      "input": "UnKnOwN",
+      "expected": ""
+    },
+    {
+      "name": "unknown_then_real",
+      "input": "unknown, 203.0.113.7",
+      "expected": ""
+    },
+    {
+      "name": "whitespace_only",
+      "input": "   \t  ",
+      "expected": ""
+    },
+    {
+      "name": "xff_chain",
+      "input": "203.0.113.7, 198.51.100.1, 198.51.100.2",
+      "expected": "203.0.113.7"
+    },
+    {
+      "name": "xff_chain_ipv6_first",
+      "input": "2001:db8::1, 198.51.100.1",
+      "expected": "2001:db8::1"
+    },
+    {
+      "name": "xff_chain_no_space",
+      "input": "203.0.113.7,198.51.100.1",
+      "expected": "203.0.113.7"
+    },
+    {
+      "name": "xff_chain_ws",
+      "input": "  203.0.113.7  ,  198.51.100.1  ",
+      "expected": "203.0.113.7"
+    }
+  ],
+  "is_private": [
+    {
+      "name": "bracketed_ipv6_ula",
+      "input": "[fc00::1]",
+      "expected": false
+    },
+    {
+      "name": "ipv4_10_8",
+      "input": "10.1.2.3",
+      "expected": true
+    },
+    {
+      "name": "ipv4_172_15_public",
+      "input": "172.15.0.1",
+      "expected": false
+    },
+    {
+      "name": "ipv4_172_16",
+      "input": "172.16.5.5",
+      "expected": true
+    },
+    {
+      "name": "ipv4_172_31",
+      "input": "172.31.255.254",
+      "expected": true
+    },
+    {
+      "name": "ipv4_172_32_public",
+      "input": "172.32.0.1",
+      "expected": false
+    },
+    {
+      "name": "ipv4_192_168",
+      "input": "192.168.0.1",
+      "expected": true
+    },
+    {
+      "name": "ipv4_loopback_is_not_private",
+      "input": "127.0.0.1",
+      "expected": false
+    },
+    {
+      "name": "ipv4_public_8_8_8_8",
+      "input": "8.8.8.8",
+      "expected": false
+    },
+    {
+      "name": "ipv6_loopback_is_not_private",
+      "input": "::1",
+      "expected": false
+    },
+    {
+      "name": "ipv6_public_2001_db8",
+      "input": "2001:db8::1",
+      "expected": false
+    },
+    {
+      "name": "ipv6_ula_fc00",
+      "input": "fc00::1",
+      "expected": true
+    },
+    {
+      "name": "ipv6_ula_fd00",
+      "input": "fd00::1",
+      "expected": true
+    },
+    {
+      "name": "ipv6_zone_id_ula",
+      "input": "fc00::1%1",
+      "expected": false
+    },
+    {
+      "name": "malformed_alpha",
+      "input": "not-an-ip",
+      "expected": false
+    },
+    {
+      "name": "malformed_partial_v4",
+      "input": "10.0.0",
+      "expected": false
+    }
+  ],
+  "is_loopback": [
+    {
+      "name": "bracketed_ipv6_loopback",
+      "input": "[::1]",
+      "expected": false
+    },
+    {
+      "name": "ipv4_loopback_127_0_0_1",
+      "input": "127.0.0.1",
+      "expected": true
+    },
+    {
+      "name": "ipv4_loopback_high",
+      "input": "127.255.255.254",
+      "expected": true
+    },
+    {
+      "name": "ipv4_loopback_shorthand",
+      "input": "127.0.0",
+      "expected": false
+    },
+    {
+      "name": "ipv4_private_not_loopback",
+      "input": "192.168.1.1",
+      "expected": false
+    },
+    {
+      "name": "ipv6_loopback_colon_colon_1",
+      "input": "::1",
+      "expected": true
+    },
+    {
+      "name": "ipv6_public_not_loopback",
+      "input": "2001:db8::1",
+      "expected": false
+    },
+    {
+      "name": "malformed_alpha",
+      "input": "not-an-ip",
+      "expected": false
+    }
+  ],
+  "is_link_local": [
+    {
+      "name": "ipv4_link_local_169_254",
+      "input": "169.254.1.1",
+      "expected": true
+    },
+    {
+      "name": "ipv4_link_local_shorthand",
+      "input": "169.254.1",
+      "expected": false
+    },
+    {
+      "name": "ipv4_private_not_link_local",
+      "input": "10.0.0.1",
+      "expected": false
+    },
+    {
+      "name": "ipv4_public_not_link_local",
+      "input": "8.8.8.8",
+      "expected": false
+    },
+    {
+      "name": "ipv6_link_local_fe80",
+      "input": "fe80::1",
+      "expected": true
+    },
+    {
+      "name": "ipv6_public_not_link_local",
+      "input": "2001:db8::1",
+      "expected": false
+    },
+    {
+      "name": "ipv6_zone_id_link_local",
+      "input": "fe80::1%1",
+      "expected": false
+    },
+    {
+      "name": "malformed_alpha",
+      "input": "not-an-ip",
+      "expected": false
+    }
+  ]
+}

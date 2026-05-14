@@ -32,7 +32,9 @@ func cleanupRateLimitKeys(t *testing.T, rdb *redis.Client, userID int64) {
 
 // TC-HAPPY-LIMITER-INT-001: CheckPreRequest allows within limits
 func TestCheckPreRequest_Redis_Allowed(t *testing.T) {
-	if testing.Short() { t.Skip("requires external service") }
+	if testing.Short() {
+		t.Skip("requires external service")
+	}
 	rdb := newTestRedis(t)
 	defer func() { _ = rdb.Close() }()
 	defer cleanupRateLimitKeys(t, rdb, 8181)
@@ -62,7 +64,9 @@ func TestCheckPreRequest_Redis_Allowed(t *testing.T) {
 
 // TC-HAPPY-LIMITER-INT-002: RPM exceeded returns denied
 func TestCheckPreRequest_Redis_RPMExceeded(t *testing.T) {
-	if testing.Short() { t.Skip("requires external service") }
+	if testing.Short() {
+		t.Skip("requires external service")
+	}
 	rdb := newTestRedis(t)
 	defer func() { _ = rdb.Close() }()
 	defer cleanupRateLimitKeys(t, rdb, 8182)
@@ -96,7 +100,9 @@ func TestCheckPreRequest_Redis_RPMExceeded(t *testing.T) {
 
 // TC-HAPPY-LIMITER-INT-003: TPM exceeded returns denied
 func TestCheckPreRequest_Redis_TPMExceeded(t *testing.T) {
-	if testing.Short() { t.Skip("requires external service") }
+	if testing.Short() {
+		t.Skip("requires external service")
+	}
 	rdb := newTestRedis(t)
 	defer func() { _ = rdb.Close() }()
 	defer cleanupRateLimitKeys(t, rdb, 8183)
@@ -124,7 +130,9 @@ func TestCheckPreRequest_Redis_TPMExceeded(t *testing.T) {
 
 // TC-HAPPY-LIMITER-INT-004: concurrency limit enforced
 func TestCheckPreRequest_Redis_ConcurrencyExceeded(t *testing.T) {
-	if testing.Short() { t.Skip("requires external service") }
+	if testing.Short() {
+		t.Skip("requires external service")
+	}
 	rdb := newTestRedis(t)
 	defer func() { _ = rdb.Close() }()
 	defer cleanupRateLimitKeys(t, rdb, 8184)
@@ -153,7 +161,9 @@ func TestCheckPreRequest_Redis_ConcurrencyExceeded(t *testing.T) {
 
 // TC-HAPPY-LIMITER-INT-005: TrackPostResponse adjusts TPM counter
 func TestTrackPostResponse_Redis_AdjustsTPM(t *testing.T) {
-	if testing.Short() { t.Skip("requires external service") }
+	if testing.Short() {
+		t.Skip("requires external service")
+	}
 	rdb := newTestRedis(t)
 	defer func() { _ = rdb.Close() }()
 	defer cleanupRateLimitKeys(t, rdb, 8185)
@@ -184,7 +194,9 @@ func TestTrackPostResponse_Redis_AdjustsTPM(t *testing.T) {
 
 // TC-HAPPY-LIMITER-INT-006: ReleaseConcurrency frees a slot
 func TestReleaseConcurrency_Redis(t *testing.T) {
-	if testing.Short() { t.Skip("requires external service") }
+	if testing.Short() {
+		t.Skip("requires external service")
+	}
 	rdb := newTestRedis(t)
 	defer func() { _ = rdb.Close() }()
 	defer cleanupRateLimitKeys(t, rdb, 8186)

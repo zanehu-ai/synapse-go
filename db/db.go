@@ -1,6 +1,8 @@
 package db
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -8,7 +10,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
-	"github.com/techfitmaster/synapse-go/config"
+	"github.com/zanehu-ai/synapse-go/config"
 )
 
 // New initializes a MySQL connection pool via GORM with the given config.
@@ -30,4 +32,22 @@ func New(cfg config.MySQLConfig) (*gorm.DB, error) {
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
 	return db, nil
+}
+
+// OpenMySQL opens a GORM DB connection with sensible pool defaults.
+func OpenMySQL(dsn string) (*gorm.DB, error) {
+	return New(config.MySQLConfig{DSN: dsn})
+}
+
+// Probe pings the underlying *sql.DB. nil handles return an error so a
+// missing-DSN startup path is reflected as unready.
+func Probe(ctx context.Context, db *gorm.DB) error {
+	if db == nil {
+		return errors.New("db: nil handle")
+	}
+	sqlDB, err := db.DB()
+	if err != nil {
+		return err
+	}
+	return sqlDB.PingContext(ctx)
 }

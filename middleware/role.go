@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/techfitmaster/synapse-go/resp"
+	"github.com/zanehu-ai/synapse-go/resp"
 )
 
 // RequireRole returns middleware that checks if the authenticated user has one of the allowed roles.

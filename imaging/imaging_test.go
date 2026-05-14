@@ -224,10 +224,10 @@ func TestFitDimensions(t *testing.T) {
 	}{
 		{1000, 500, 400, 0, 400, 200},  // constrain by width
 		{500, 1000, 0, 400, 200, 400},  // constrain by height
-		{800, 600, 400, 300, 400, 300},  // constrain by both (same ratio)
-		{800, 600, 400, 400, 400, 300},  // constrain by width (narrower limit)
-		{200, 100, 400, 300, 200, 100},  // no upscale (both within limits)
-		{100, 100, 0, 0, 100, 100},      // no limits
+		{800, 600, 400, 300, 400, 300}, // constrain by both (same ratio)
+		{800, 600, 400, 400, 400, 300}, // constrain by width (narrower limit)
+		{200, 100, 400, 300, 200, 100}, // no upscale (both within limits)
+		{100, 100, 0, 0, 100, 100},     // no limits
 	}
 	for _, tt := range tests {
 		w, h := fitDimensions(tt.srcW, tt.srcH, tt.maxW, tt.maxH)

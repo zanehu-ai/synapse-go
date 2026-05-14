@@ -1,6 +1,10 @@
 package config
 
-import "os"
+import (
+	"os"
+	"strconv"
+	"strings"
+)
 
 // MySQLConfig holds MySQL connection settings.
 type MySQLConfig struct {
@@ -44,4 +48,47 @@ func GetEnv(key, defaultVal string) string {
 		return val
 	}
 	return defaultVal
+}
+
+// GetEnvInt reads an integer environment variable with a fallback default.
+func GetEnvInt(key string, defaultVal int) int {
+	raw := strings.TrimSpace(os.Getenv(key))
+	if raw == "" {
+		return defaultVal
+	}
+	val, err := strconv.Atoi(raw)
+	if err != nil {
+		return defaultVal
+	}
+	return val
+}
+
+// GetEnvBool reads a boolean environment variable with a fallback default.
+func GetEnvBool(key string, defaultVal bool) bool {
+	raw := strings.TrimSpace(os.Getenv(key))
+	if raw == "" {
+		return defaultVal
+	}
+	val, err := strconv.ParseBool(raw)
+	if err != nil {
+		return defaultVal
+	}
+	return val
+}
+
+// GetEnvCSV reads a comma-separated environment variable, trimming empty items.
+func GetEnvCSV(key string) []string {
+	raw := strings.TrimSpace(os.Getenv(key))
+	if raw == "" {
+		return nil
+	}
+	parts := strings.Split(raw, ",")
+	out := make([]string, 0, len(parts))
+	for _, part := range parts {
+		part = strings.TrimSpace(part)
+		if part != "" {
+			out = append(out, part)
+		}
+	}
+	return out
 }

@@ -8,7 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/techfitmaster/synapse-go/resp"
+	"github.com/zanehu-ai/synapse-go/resp"
 )
 
 func init() { gin.SetMode(gin.TestMode) }
@@ -64,7 +64,7 @@ func TestHTTPStatus(t *testing.T) {
 		{resp.CodeInternal, http.StatusInternalServerError},
 		{resp.CodeBadRequest, http.StatusBadRequest},
 		{resp.CodeConflict, http.StatusConflict},
-		{9999, http.StatusBadRequest},              // unknown code
+		{9999, http.StatusBadRequest}, // unknown code
 	}
 	for _, tt := range tests {
 		t.Run("", func(t *testing.T) {

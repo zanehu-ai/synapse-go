@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "reference_impl": "synapse-go/idempotency/idempotency.go",
+  "algorithm": "SHA-256",
+  "encoding": "lowercase-hex with 'sha256:' prefix",
+  "input": "raw request body bytes — NO JSON canonicalization, NO key sorting, whitespace-significant",
+  "note": "Frozen reference: synapse-go/idempotency.BodyHash. Do NOT modify without updating Java conformance test.",
+  "cases": [
+    {
+      "name": "simple_json",
+      "description": "compact JSON object — baseline case",
+      "input_utf8": "{\"amount\":100,\"currency\":\"USD\"}",
+      "hash": "sha256:9d1215b4ce08e5b8c77bccd7c2f673af82d153b1eabea22a1e3c524272b78db1"
+    },
+    {
+      "name": "empty_body",
+      "description": "empty byte slice — SHA-256 of zero bytes",
+      "input_utf8": "",
+      "hash": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "utf8_chinese_json",
+      "description": "UTF-8 multibyte JSON — Go hashes raw UTF-8 bytes, not code-points",
+      "input_utf8": "{\"user\":\"用户\",\"action\":\"充值\",\"amount\":500}",
+      "hash": "sha256:b0437fb1f0eb0b60759f0075a28b974b89c301402230ab7edaf53150b369a591"
+    },
+    {
+      "name": "json_with_extra_whitespace",
+      "description": "same semantic JSON as simple_json but with spaces — whitespace IS significant; hash differs",
+      "input_utf8": "{\"amount\": 100, \"currency\": \"USD\"}",
+      "hash": "sha256:e4a1887c00d9dca08773dd7df9afc92666b7e941e224ea25833dc085d4362b6e"
+    },
+    {
+      "name": "json_compact_same_content",
+      "description": "exact same bytes as simple_json — hash is identical, confirming stability",
+      "input_utf8": "{\"amount\":100,\"currency\":\"USD\"}",
+      "hash": "sha256:9d1215b4ce08e5b8c77bccd7c2f673af82d153b1eabea22a1e3c524272b78db1"
+    },
+    {
+      "name": "json_different_key_order",
+      "description": "same fields as simple_json but different key order — hash differs (no canonicalization)",
+      "input_utf8": "{\"currency\":\"USD\",\"amount\":100}",
+      "hash": "sha256:fb48d95687562f0ee6a5fb8b830121894e52d0a2a3aef2187bec05ff0b718541"
+    },
+    {
+      "name": "tampered_body",
+      "description": "1-byte difference from simple_json (amount 100→101) — hash must differ",
+      "input_utf8": "{\"amount\":101,\"currency\":\"USD\"}",
+      "hash": "sha256:869a4653f29175ec953585b7790412500560b3ab846d9e92e3bd7684ed668bf9"
+    },
+    {
+      "name": "lowercase_hex_confirm",
+      "description": "confirms encoding is lowercase hex (no uppercase letters in output)",
+      "input_utf8": "hello",
+      "hash": "sha256:2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824"
+    },
+    {
+      "name": "single_byte_boundary",
+      "description": "single character body — boundary case",
+      "input_utf8": "a",
+      "hash": "sha256:ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb"
+    }
+  ]
+}

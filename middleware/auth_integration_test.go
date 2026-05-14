@@ -21,7 +21,9 @@ func newTestRedis(t *testing.T) *redis.Client {
 
 // TC-HAPPY-AUTH-INT-001: LoginRateLimit allows requests under limit
 func TestLoginRateLimit_Redis_AllowsUnderLimit(t *testing.T) {
-	if testing.Short() { t.Skip("requires external service") }
+	if testing.Short() {
+		t.Skip("requires external service")
+	}
 	rdb := newTestRedis(t)
 	defer func() { _ = rdb.Close() }()
 
@@ -48,7 +50,9 @@ func TestLoginRateLimit_Redis_AllowsUnderLimit(t *testing.T) {
 
 // TC-HAPPY-AUTH-INT-002: LoginRateLimit blocks after max attempts
 func TestLoginRateLimit_Redis_BlocksAfterMax(t *testing.T) {
-	if testing.Short() { t.Skip("requires external service") }
+	if testing.Short() {
+		t.Skip("requires external service")
+	}
 	rdb := newTestRedis(t)
 	defer func() { _ = rdb.Close() }()
 
@@ -84,7 +88,9 @@ func TestLoginRateLimit_Redis_BlocksAfterMax(t *testing.T) {
 
 // TC-HAPPY-AUTH-INT-003: LoginRateLimit clears counter on success
 func TestLoginRateLimit_Redis_ClearsOnSuccess(t *testing.T) {
-	if testing.Short() { t.Skip("requires external service") }
+	if testing.Short() {
+		t.Skip("requires external service")
+	}
 	rdb := newTestRedis(t)
 	defer func() { _ = rdb.Close() }()
 
@@ -124,7 +130,9 @@ func TestLoginRateLimit_Redis_ClearsOnSuccess(t *testing.T) {
 
 // TC-HAPPY-AUTH-INT-004: IPRateLimit allows requests under RPM
 func TestIPRateLimit_Redis_AllowsUnderLimit(t *testing.T) {
-	if testing.Short() { t.Skip("requires external service") }
+	if testing.Short() {
+		t.Skip("requires external service")
+	}
 	rdb := newTestRedis(t)
 	defer func() { _ = rdb.Close() }()
 
@@ -150,7 +158,9 @@ func TestIPRateLimit_Redis_AllowsUnderLimit(t *testing.T) {
 
 // TC-HAPPY-AUTH-INT-005: IPRateLimit blocks after exceeding RPM
 func TestIPRateLimit_Redis_BlocksOverLimit(t *testing.T) {
-	if testing.Short() { t.Skip("requires external service") }
+	if testing.Short() {
+		t.Skip("requires external service")
+	}
 	rdb := newTestRedis(t)
 	defer func() { _ = rdb.Close() }()
 

@@ -11,7 +11,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/techfitmaster/synapse-go/logger"
+	"github.com/zanehu-ai/synapse-go/logger"
 )
 
 // Option configures the graceful server.

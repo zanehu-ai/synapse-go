@@ -1,4 +1,4 @@
-module github.com/techfitmaster/synapse-go
+module github.com/zanehu-ai/synapse-go
 
 go 1.25.0
 

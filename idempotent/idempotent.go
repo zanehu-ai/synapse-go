@@ -9,8 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis/v8"
 
-	"github.com/techfitmaster/synapse-go/lock"
-	"github.com/techfitmaster/synapse-go/resp"
+	"github.com/zanehu-ai/synapse-go/lock"
+	"github.com/zanehu-ai/synapse-go/resp"
 )
 
 // ErrDuplicateRequest is returned when a request with the same idempotency key is already being processed.

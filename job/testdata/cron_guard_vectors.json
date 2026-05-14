@@ -1,0 +1,104 @@
+{
+  "version": 1,
+  "reference_impl": "synapse-go/job/cronguard.go",
+  "cases": [
+    {
+      "name": "valid_utc_midnight",
+      "input": "CRON_TZ=UTC 0 0 * * *",
+      "accept": true,
+      "normalized": "CRON_TZ=UTC 0 0 * * *",
+      "note": "UTC midnight — canonical form, always accepted"
+    },
+    {
+      "name": "valid_shanghai_midnight",
+      "input": "CRON_TZ=Asia/Shanghai 0 0 * * *",
+      "accept": true,
+      "normalized": "CRON_TZ=Asia/Shanghai 0 0 * * *",
+      "note": "Beijing midnight (Asia/Shanghai UTC+8); equivalent UTC firing time is 16:00 previous day"
+    },
+    {
+      "name": "valid_extra_whitespace_normalized",
+      "input": "CRON_TZ=UTC  0  0  *  *  *",
+      "accept": true,
+      "normalized": "CRON_TZ=UTC 0 0 * * *",
+      "note": "Extra internal whitespace is normalised to single spaces"
+    },
+    {
+      "name": "valid_every_5_minutes",
+      "input": "CRON_TZ=UTC */5 * * * *",
+      "accept": true,
+      "normalized": "CRON_TZ=UTC */5 * * * *",
+      "note": "5-field step expression with explicit TZ — accepted"
+    },
+    {
+      "name": "valid_weekly_sunday",
+      "input": "CRON_TZ=Asia/Shanghai 0 20 * * 0",
+      "accept": true,
+      "normalized": "CRON_TZ=Asia/Shanghai 0 20 * * 0",
+      "note": "Weekly Sunday 20:00 Shanghai time; DOW 0 is standard POSIX"
+    },
+    {
+      "name": "reject_six_field_quartz_midnight",
+      "input": "0 0 0 * * ?",
+      "accept": false,
+      "error_contains": "Quartz-only metacharacter",
+      "note": "Quartz 6-field with seconds AND '?' — metachar check runs first, reports '?'"
+    },
+    {
+      "name": "reject_six_field_no_quartz_char",
+      "input": "0 0 2 * * 1",
+      "accept": false,
+      "error_contains": "6 fields",
+      "note": "6-field Quartz without metacharacters: leading '0' is seconds; no CRON_TZ prefix either"
+    },
+    {
+      "name": "reject_question_mark",
+      "input": "CRON_TZ=UTC 0 0 ? * *",
+      "accept": false,
+      "error_contains": "Quartz-only metacharacter",
+      "note": "'?' is Quartz DOM wildcard; no robfig/cron equivalent — use '*' for 'any day'"
+    },
+    {
+      "name": "reject_L_char",
+      "input": "CRON_TZ=UTC 0 0 L * *",
+      "accept": false,
+      "error_contains": "Quartz-only metacharacter",
+      "note": "'L' means last-day-of-month in Quartz; not supported by robfig/cron"
+    },
+    {
+      "name": "reject_W_char",
+      "input": "CRON_TZ=UTC 0 0 1W * *",
+      "accept": false,
+      "error_contains": "Quartz-only metacharacter",
+      "note": "'W' means nearest weekday in Quartz; not supported by robfig/cron"
+    },
+    {
+      "name": "reject_hash_char",
+      "input": "CRON_TZ=UTC 0 0 * * 5#3",
+      "accept": false,
+      "error_contains": "Quartz-only metacharacter",
+      "note": "'#' means Nth weekday of month in Quartz; not supported by robfig/cron"
+    },
+    {
+      "name": "reject_implicit_tz_five_field",
+      "input": "0 0 * * *",
+      "accept": false,
+      "error_contains": "no explicit timezone",
+      "note": "Valid 5-field POSIX cron but missing CRON_TZ= prefix — rejected to prevent UTC/JVM-TZ drift; add CRON_TZ=UTC or CRON_TZ=Asia/Shanghai"
+    },
+    {
+      "name": "reject_implicit_tz_daily_2am",
+      "input": "0 2 * * *",
+      "accept": false,
+      "error_contains": "no explicit timezone",
+      "note": "Common 'every day at 2am' cron; ambiguous without TZ prefix — was this Shanghai 2am or UTC 2am?"
+    },
+    {
+      "name": "reject_six_field_with_tz_prefix",
+      "input": "CRON_TZ=UTC 0 0 0 * * *",
+      "accept": false,
+      "error_contains": "6 fields",
+      "note": "Even with CRON_TZ prefix, 6 schedule fields are rejected"
+    }
+  ]
+}
